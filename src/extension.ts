@@ -7,11 +7,13 @@ import { HighlightService } from './services/HighlightService';
 
 export function activate(context: vscode.ExtensionContext) {
 	const filterManager = new FilterManager();
-	const treeDataProvider = new FilterTreeDataProvider(filterManager);
+	const wordTreeDataProvider = new FilterTreeDataProvider(filterManager, 'word');
+	const regexTreeDataProvider = new FilterTreeDataProvider(filterManager, 'regex');
 	const logProcessor = new LogProcessor();
 	const highlightService = new HighlightService(filterManager);
 
-	vscode.window.registerTreeDataProvider('loglens-filters', treeDataProvider);
+	vscode.window.registerTreeDataProvider('loglens-filters', wordTreeDataProvider);
+	vscode.window.registerTreeDataProvider('loglens-regex-filters', regexTreeDataProvider);
 
 	// Update highlights when active editor changes
 	context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(editor => {
@@ -42,41 +44,92 @@ export function activate(context: vscode.ExtensionContext) {
 		highlightService.updateHighlights(vscode.window.activeTextEditor);
 	}
 
-	// Command: Add Filter Group
+	// Command: Add Word Filter Group
 	context.subscriptions.push(vscode.commands.registerCommand('loglens.addFilterGroup', async () => {
-		const name = await vscode.window.showInputBox({ prompt: 'Enter Filter Group Name' });
+		const name = await vscode.window.showInputBox({ prompt: 'Enter Word Filter Group Name' });
 		if (name) {
-			filterManager.addGroup(name);
+			filterManager.addGroup(name, false);
 		}
 	}));
 
-	// Command: Add Filter
-	context.subscriptions.push(vscode.commands.registerCommand('loglens.addFilter', async (group: FilterGroup | undefined) => {
-		let targetGroupId: string | undefined = group?.id;
+	// Command: Add Regex Filter Group
+	context.subscriptions.push(vscode.commands.registerCommand('loglens.addRegexFilterGroup', async () => {
+		const name = await vscode.window.showInputBox({ prompt: 'Enter Regex Filter Group Name' });
+		if (name) {
+			filterManager.addGroup(name, true);
+		}
+	}));
 
+	// Command: Add Word Filter
+	context.subscriptions.push(vscode.commands.registerCommand('loglens.addFilter', async (group: FilterGroup | undefined) => {
+		const targetGroupId = await ensureGroupId(filterManager, group, false);
 		if (!targetGroupId) {
-			const groups = filterManager.getGroups();
-			if (groups.length === 0) {
-				vscode.window.showErrorMessage('No filter groups exist. Create a group first.');
-				return;
-			}
-			const selected = await vscode.window.showQuickPick(groups.map(g => ({ label: g.name, id: g.id })), { placeHolder: 'Select Filter Group' });
-			if (!selected) return;
-			targetGroupId = selected.id;
+			return;
 		}
 
 		const keyword = await vscode.window.showInputBox({ prompt: 'Enter Filter Keyword' });
-		if (!keyword) return;
+		if (!keyword) {
+			return;
+		}
 
 		const type = await vscode.window.showQuickPick(['include', 'exclude'], { placeHolder: 'Select Filter Type' });
-		if (!type) return;
+		if (!type) {
+			return;
+		}
 
-		filterManager.addFilter(targetGroupId, keyword, type as 'include' | 'exclude');
+		filterManager.addFilter(targetGroupId, keyword, type as 'include' | 'exclude', false);
 	}));
+
+	// Command: Add Regex Filter
+	context.subscriptions.push(vscode.commands.registerCommand('loglens.addRegexFilter', async (group: FilterGroup | undefined) => {
+		const targetGroupId = await ensureGroupId(filterManager, group, true);
+		if (!targetGroupId) {
+			return;
+		}
+
+		const nickname = await vscode.window.showInputBox({ prompt: 'Enter Filter Nickname (e.g. ADB Logcat)' });
+		if (!nickname) {
+			return;
+		}
+
+		const pattern = await vscode.window.showInputBox({
+			prompt: 'Enter Regex Pattern',
+			validateInput: (value) => {
+				try {
+					new RegExp(value);
+					return null;
+				} catch (e) {
+					return 'Invalid Regular Expression';
+				}
+			}
+		});
+		if (!pattern) {
+			return;
+		}
+
+		// Skip type selection for Regex, default to 'include'
+		filterManager.addFilter(targetGroupId, pattern, 'include', true, nickname);
+	}));
+
+	async function ensureGroupId(manager: FilterManager, group: FilterGroup | undefined, isRegex: boolean): Promise<string | undefined> {
+		if (group?.id) {
+			return group.id;
+		}
+
+		const groups = manager.getGroups().filter(g => isRegex ? g.isRegex : !g.isRegex);
+		if (groups.length === 0) {
+			vscode.window.showErrorMessage(`No ${isRegex ? 'Regex' : 'Word'} filter groups exist. Create a group first.`);
+			return undefined;
+		}
+		const selected = await vscode.window.showQuickPick(groups.map(g => ({ label: g.name, id: g.id })), { placeHolder: `Select ${isRegex ? 'Regex' : 'Word'} Filter Group` });
+		return selected?.id;
+	}
 
 	// Command: Toggle Group
 	context.subscriptions.push(vscode.commands.registerCommand('loglens.toggleGroup', (group: FilterGroup) => {
-		if (group) filterManager.toggleGroup(group.id);
+		if (group) {
+			filterManager.toggleGroup(group.id);
+		}
 	}));
 
 	// Command: Enable Group
@@ -98,7 +151,9 @@ export function activate(context: vscode.ExtensionContext) {
 		const groups = filterManager.getGroups();
 		for (const g of groups) {
 			if (g.filters.find(f => f.id === item.id)) {
-				if (!item.isEnabled) filterManager.toggleFilter(g.id, item.id);
+				if (!item.isEnabled) {
+					filterManager.toggleFilter(g.id, item.id);
+				}
 				break;
 			}
 		}
@@ -109,7 +164,9 @@ export function activate(context: vscode.ExtensionContext) {
 		const groups = filterManager.getGroups();
 		for (const g of groups) {
 			if (g.filters.find(f => f.id === item.id)) {
-				if (item.isEnabled) filterManager.toggleFilter(g.id, item.id);
+				if (item.isEnabled) {
+					filterManager.toggleFilter(g.id, item.id);
+				}
 				break;
 			}
 		}
@@ -128,7 +185,9 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Command: Delete Filter / Group
 	context.subscriptions.push(vscode.commands.registerCommand('loglens.deleteFilter', async (item: FilterGroup | FilterItem) => {
-		if (!item) return;
+		if (!item) {
+			return;
+		}
 		if ((item as FilterGroup).filters !== undefined) {
 			filterManager.removeGroup(item.id);
 		} else {
@@ -147,7 +206,9 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Command: Apply Filter
 	context.subscriptions.push(vscode.commands.registerCommand('loglens.applyFilter', async () => {
-		if (isProcessing) return;
+		if (isProcessing) {
+			return;
+		}
 		isProcessing = true;
 
 		try {
@@ -183,7 +244,9 @@ export function activate(context: vscode.ExtensionContext) {
 				// Fallback aggressive search if Tab API didn't give a path (e.g. custom editor?)
 				if (!filePathFromTab && !document) {
 					const openFile = vscode.workspace.textDocuments.find(doc => doc.uri.scheme === 'file' || doc.uri.scheme === 'untitled');
-					if (openFile) document = openFile;
+					if (openFile) {
+						document = openFile;
+					}
 				}
 			}
 
@@ -211,14 +274,18 @@ export function activate(context: vscode.ExtensionContext) {
 						const filtered = lines.filter(line => {
 							stats.processed++;
 							const keep = shouldKeepLine(line, activeGroups);
-							if (keep) stats.matched++;
+							if (keep) {
+								stats.matched++;
+							}
 							return keep;
 						});
 						inMemoryContent = filtered.join('\n');
 					} else {
 						// Read from Disk (Stream)
 						const targetPath = filePathFromTab || document?.uri.fsPath;
-						if (!targetPath) throw new Error("Could not check active file path");
+						if (!targetPath) {
+							throw new Error("Could not check active file path");
+						}
 
 						const result = await logProcessor.processFile(targetPath, activeGroups);
 						outputPath = result.outputPath;
@@ -278,17 +345,36 @@ function shouldKeepLine(line: string, groups: FilterGroup[]): boolean {
 		const excludes = group.filters.filter(f => f.type === 'exclude' && f.isEnabled);
 
 		for (const exclude of excludes) {
-			if (line.includes(exclude.keyword)) {
-				return false;
+			if (exclude.isRegex) {
+				try {
+					const regex = new RegExp(exclude.keyword);
+					if (regex.test(line)) {
+						return false;
+					}
+				} catch (e) { /* ignore invalid regex */ }
+			} else {
+				if (line.includes(exclude.keyword)) {
+					return false;
+				}
 			}
 		}
 
 		if (includes.length > 0) {
 			let matchFound = false;
 			for (const include of includes) {
-				if (line.includes(include.keyword)) {
-					matchFound = true;
-					break;
+				if (include.isRegex) {
+					try {
+						const regex = new RegExp(include.keyword);
+						if (regex.test(line)) {
+							matchFound = true;
+							break;
+						}
+					} catch (e) { /* ignore invalid regex */ }
+				} else {
+					if (line.includes(include.keyword)) {
+						matchFound = true;
+						break;
+					}
 				}
 			}
 			if (!matchFound) {

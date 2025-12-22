@@ -66,8 +66,17 @@ export class LogProcessor {
 
             // Check Excludes first (Fail fast)
             for (const exclude of excludes) {
-                if (line.includes(exclude.keyword)) {
-                    return false;
+                if (exclude.isRegex) {
+                    try {
+                        const regex = new RegExp(exclude.keyword);
+                        if (regex.test(line)) {
+                            return false;
+                        }
+                    } catch (e) { /* ignore invalid regex */ }
+                } else {
+                    if (line.includes(exclude.keyword)) {
+                        return false;
+                    }
                 }
             }
 
@@ -75,9 +84,19 @@ export class LogProcessor {
             if (includes.length > 0) {
                 let matchFound = false;
                 for (const include of includes) {
-                    if (line.includes(include.keyword)) {
-                        matchFound = true;
-                        break;
+                    if (include.isRegex) {
+                        try {
+                            const regex = new RegExp(include.keyword);
+                            if (regex.test(line)) {
+                                matchFound = true;
+                                break;
+                            }
+                        } catch (e) { /* ignore invalid regex */ }
+                    } else {
+                        if (line.includes(include.keyword)) {
+                            matchFound = true;
+                            break;
+                        }
                     }
                 }
                 if (!matchFound) {
