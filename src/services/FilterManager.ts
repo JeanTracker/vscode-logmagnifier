@@ -16,26 +16,29 @@ export class FilterManager {
         return this.groups;
     }
 
-    public addGroup(name: string): FilterGroup {
+    public addGroup(name: string, isRegex: boolean = false): FilterGroup {
         const newGroup: FilterGroup = {
             id: generateId(),
             name,
             filters: [],
-            isEnabled: false
+            isEnabled: false,
+            isRegex
         };
         this.groups.push(newGroup);
         this._onDidChangeFilters.fire();
         return newGroup;
     }
 
-    public addFilter(groupId: string, keyword: string, type: FilterType): void {
+    public addFilter(groupId: string, keyword: string, type: FilterType, isRegex: boolean = false, nickname?: string): void {
         const group = this.groups.find(g => g.id === groupId);
         if (group) {
             const newFilter: FilterItem = {
                 id: generateId(),
                 keyword,
                 type,
-                isEnabled: true
+                isEnabled: true,
+                isRegex,
+                nickname
             };
             group.filters.push(newFilter);
             this._onDidChangeFilters.fire();

@@ -5,6 +5,8 @@ export interface FilterItem {
     keyword: string;
     type: FilterType;
     isEnabled: boolean;
+    isRegex?: boolean;
+    nickname?: string;
 }
 
 export interface FilterGroup {
@@ -12,4 +14,5 @@ export interface FilterGroup {
     name: string;
     filters: FilterItem[];
     isEnabled: boolean;
+    isRegex?: boolean;
 }
