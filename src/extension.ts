@@ -183,6 +183,16 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	}));
 
+	// Command: Toggle Filter Highlight Mode (Full Line vs Word)
+	context.subscriptions.push(vscode.commands.registerCommand('loglens.toggleFilterHighlightMode', (item: FilterItem) => {
+		const groups = filterManager.getGroups();
+		let targetGroup = groups.find(g => g.filters.some(f => f.id === item.id));
+
+		if (targetGroup) {
+			filterManager.toggleFilterHighlightMode(targetGroup.id, item.id);
+		}
+	}));
+
 	// Command: Change Filter Color
 	context.subscriptions.push(vscode.commands.registerCommand('loglens.changeFilterColor', async (item: any) => {
 		// item likely has structure: { groupId, id, ... } from Tree Item context

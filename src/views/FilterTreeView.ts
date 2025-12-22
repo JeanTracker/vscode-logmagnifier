@@ -50,7 +50,14 @@ export class FilterTreeDataProvider implements vscode.TreeDataProvider<TreeItem>
                     const fillColor = preset ? preset.icon : element.color;
 
                     // Create a colored dot icon using SVG data URI
-                    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><circle cx="8" cy="8" r="4" fill="${fillColor}"/></svg>`;
+                    let svg: string;
+                    if (element.enableFullLineHighlight) {
+                        // Rounded box (pill shape) - represents line
+                        svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><rect x="1" y="5" width="14" height="6" rx="3" ry="3" fill="${fillColor}"/></svg>`;
+                    } else {
+                        // Circle - represents word
+                        svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><circle cx="8" cy="8" r="4" fill="${fillColor}"/></svg>`;
+                    }
                     item.iconPath = vscode.Uri.parse(`data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`);
                 } else {
                     item.iconPath = new vscode.ThemeIcon('pass-filled');

@@ -114,7 +114,13 @@ export class HighlightService {
                 while ((match = regex.exec(text))) {
                     const startPos = editor.document.positionAt(match.index);
                     const endPos = editor.document.positionAt(match.index + match[0].length);
-                    rangesByColor.get(color)!.push(new vscode.Range(startPos, endPos));
+
+                    if (filter.enableFullLineHighlight) {
+                        const line = editor.document.lineAt(startPos.line);
+                        rangesByColor.get(color)!.push(line.rangeIncludingLineBreak);
+                    } else {
+                        rangesByColor.get(color)!.push(new vscode.Range(startPos, endPos));
+                    }
                 }
             } catch (e) {
                 // Ignore

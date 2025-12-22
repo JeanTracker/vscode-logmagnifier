@@ -126,6 +126,11 @@
         "command": "loglens.changeFilterColor",
         "title": "Change Color",
         "icon": "$(paintcan)"
+      },
+      {
+        "command": "loglens.toggleFilterHighlightMode",
+        "title": "Toggle Full Line Highlight",
+        "icon": "$(arrow-both)"
       }
     ],
     "menus": {
@@ -148,44 +153,54 @@
       ],
       "view/item/context": [
         {
+          "command": "loglens.toggleFilterHighlightMode",
+          "when": "view == loglens-filters && (viewItem == filterItemEnabled || viewItem == filterItemDisabled)",
+          "group": "inline@2"
+        },
+        {
           "command": "loglens.enableGroup",
           "when": "(view == loglens-filters || view == loglens-regex-filters) && viewItem == filterGroupDisabled",
-          "group": "inline"
+          "group": "inline@3"
         },
         {
           "command": "loglens.disableGroup",
           "when": "(view == loglens-filters || view == loglens-regex-filters) && viewItem == filterGroupEnabled",
-          "group": "inline"
+          "group": "inline@3"
         },
         {
           "command": "loglens.addFilter",
           "when": "view == loglens-filters && viewItem =~ /filterGroup.*/",
-          "group": "inline"
+          "group": "inline@1"
         },
         {
           "command": "loglens.addRegexFilter",
           "when": "view == loglens-regex-filters && viewItem =~ /filterGroup.*/",
-          "group": "inline"
+          "group": "inline@1"
         },
         {
           "command": "loglens.enableFilter",
           "when": "(view == loglens-filters || view == loglens-regex-filters) && viewItem == filterItemDisabled",
-          "group": "inline"
+          "group": "inline@4"
         },
         {
           "command": "loglens.disableFilter",
           "when": "(view == loglens-filters || view == loglens-regex-filters) && viewItem == filterItemEnabled",
-          "group": "inline"
+          "group": "inline@4"
         },
         {
           "command": "loglens.deleteFilter",
-          "when": "view == loglens-filters || view == loglens-regex-filters",
-          "group": "inline"
+          "when": "(viewItem == filterItemEnabled || viewItem == filterItemDisabled) && (view == loglens-filters || view == loglens-regex-filters)",
+          "group": "inline@3"
+        },
+        {
+          "command": "loglens.deleteFilter",
+          "when": "viewItem =~ /filterGroup.*/ && (view == loglens-filters || view == loglens-regex-filters)",
+          "group": "inline@2"
         },
         {
           "command": "loglens.changeFilterColor",
           "when": "view == loglens-filters && (viewItem == filterItemEnabled || viewItem == filterItemDisabled)",
-          "group": "inline"
+          "group": "inline@1"
         }
       ]
     }

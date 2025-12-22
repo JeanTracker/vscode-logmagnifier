@@ -140,6 +140,17 @@ export class FilterManager {
         }
     }
 
+    public toggleFilterHighlightMode(groupId: string, filterId: string): void {
+        const group = this.groups.find(g => g.id === groupId);
+        if (group) {
+            const filter = group.filters.find(f => f.id === filterId);
+            if (filter) {
+                filter.enableFullLineHighlight = !filter.enableFullLineHighlight;
+                this._onDidChangeFilters.fire();
+            }
+        }
+    }
+
     public removeFilter(groupId: string, filterId: string): void {
         const group = this.groups.find(g => g.id === groupId);
         if (group) {

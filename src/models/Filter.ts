@@ -8,6 +8,7 @@ export interface FilterItem {
     isRegex?: boolean;
     nickname?: string;
     color?: string;
+    enableFullLineHighlight?: boolean;
 }
 
 export interface FilterGroup {
