@@ -33,7 +33,7 @@ export class HighlightService {
 
         activeGroups.forEach(g => {
             g.filters.forEach(f => {
-                if (f.type === 'include' && f.isEnabled) {
+                if (f.type === 'include' && f.isEnabled && !f.isRegex) {
                     includeFilters.push(f);
                 }
             });
