@@ -72,12 +72,17 @@ export function activate(context: vscode.ExtensionContext) {
 			return;
 		}
 
-		const type = await vscode.window.showQuickPick(['include', 'exclude'], { placeHolder: 'Select Filter Type' });
-		if (!type) {
+		const items: vscode.QuickPickItem[] = [
+			{ label: 'Include', description: 'Show lines containing this keyword' },
+			{ label: 'Exclude', description: 'Hide lines containing this keyword' }
+		];
+
+		const selected = await vscode.window.showQuickPick(items, { placeHolder: 'Select Filter Type' });
+		if (!selected) {
 			return;
 		}
 
-		filterManager.addFilter(targetGroupId, keyword, type as 'include' | 'exclude', false);
+		filterManager.addFilter(targetGroupId, keyword, selected.label === 'Include' ? 'include' : 'exclude', false);
 	}));
 
 	// Command: Add Regex Filter

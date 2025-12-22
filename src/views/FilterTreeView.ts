@@ -35,7 +35,7 @@ export class FilterTreeDataProvider implements vscode.TreeDataProvider<TreeItem>
                 label = element.nickname || element.keyword;
                 description = element.keyword + (element.isEnabled ? '' : ' (Disabled)');
             } else {
-                label = `${element.type === 'include' ? '[IN]' : '[OUT]'} ${element.keyword}`;
+                label = `${element.type === 'include' ? '➕' : '➖'} ${element.keyword}`;
             }
 
             const item = new vscode.TreeItem(label, vscode.TreeItemCollapsibleState.None);
