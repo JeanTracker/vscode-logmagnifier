@@ -47,7 +47,7 @@ export class FilterManager {
 
     private initDefaultFilters(): void {
         const featuredGroup = this.addGroup('Presets', true);
-        featuredGroup.isEnabled = true;
+        featuredGroup.isEnabled = false;
 
         this.addFilter(
             featuredGroup.id,

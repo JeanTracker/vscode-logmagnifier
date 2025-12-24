@@ -75,7 +75,8 @@ export class LogProcessor {
             for (const exclude of excludes) {
                 if (exclude.isRegex) {
                     try {
-                        const regex = new RegExp(exclude.keyword);
+                        const flags = exclude.caseSensitive ? '' : 'i';
+                        const regex = new RegExp(exclude.keyword, flags);
                         if (regex.test(line)) {
                             return false;
                         }
@@ -101,7 +102,8 @@ export class LogProcessor {
                 for (const include of includes) {
                     if (include.isRegex) {
                         try {
-                            const regex = new RegExp(include.keyword);
+                            const flags = include.caseSensitive ? '' : 'i';
+                            const regex = new RegExp(include.keyword, flags);
                             if (regex.test(line)) {
                                 matchFound = true;
                                 break;

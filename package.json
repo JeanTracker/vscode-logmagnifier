@@ -45,6 +45,11 @@
           "type": "number",
           "default": 5000,
           "description": "Duration for status bar messages in milliseconds."
+        },
+        "loglens.enableRegexHighlight": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable highlighting for Regex filters in the editor."
         }
       }
     },
@@ -93,8 +98,13 @@
         "icon": "$(plus)"
       },
       {
-        "command": "loglens.applyFilter",
-        "title": "Apply Filter",
+        "command": "loglens.applyWordFilter",
+        "title": "Apply Word Filter",
+        "icon": "$(play)"
+      },
+      {
+        "command": "loglens.applyRegexFilter",
+        "title": "Apply Regex Filter",
         "icon": "$(play)"
       },
       {
@@ -151,8 +161,13 @@
           "group": "navigation"
         },
         {
-          "command": "loglens.applyFilter",
-          "when": "view == loglens-filters || view == loglens-regex-filters",
+          "command": "loglens.applyWordFilter",
+          "when": "view == loglens-filters",
+          "group": "navigation"
+        },
+        {
+          "command": "loglens.applyRegexFilter",
+          "when": "view == loglens-regex-filters",
           "group": "navigation"
         }
       ],

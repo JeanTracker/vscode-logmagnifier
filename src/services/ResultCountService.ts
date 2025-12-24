@@ -31,27 +31,33 @@ export class ResultCountService {
         const filterCounts: { filterId: string, count: number }[] = [];
         const groupCounts: { groupId: string, count: number }[] = [];
 
+        const enableRegexHighlight = vscode.workspace.getConfiguration('loglens').get<boolean>('enableRegexHighlight') || false;
+
         for (const group of groups) {
             let groupMatchCount = 0;
-            const activeFilters = group.isEnabled ? group.filters.filter(f => f.isEnabled) : [];
 
             for (const filter of group.filters) {
                 let count = 0;
                 if (group.isEnabled && filter.isEnabled && filter.keyword && filter.type === 'include') {
-                    try {
-                        let regex: RegExp;
-                        if (filter.isRegex) {
-                            regex = new RegExp(filter.keyword, 'g');
-                        } else {
-                            const escapedKeyword = filter.keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                            const flags = filter.caseSensitive ? 'g' : 'gi';
-                            regex = new RegExp(escapedKeyword, flags);
-                        }
-
-                        const matches = text.match(regex);
-                        count = matches ? matches.length : 0;
-                    } catch (e) {
+                    // Skip regex count if highlighting is disabled for regex
+                    if (filter.isRegex && !enableRegexHighlight) {
                         count = 0;
+                    } else {
+                        try {
+                            let regex: RegExp;
+                            if (filter.isRegex) {
+                                regex = new RegExp(filter.keyword, 'g');
+                            } else {
+                                const escapedKeyword = filter.keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                                const flags = filter.caseSensitive ? 'g' : 'gi';
+                                regex = new RegExp(escapedKeyword, flags);
+                            }
+
+                            const matches = text.match(regex);
+                            count = matches ? matches.length : 0;
+                        } catch (e) {
+                            count = 0;
+                        }
                     }
                 }
                 filterCounts.push({ filterId: filter.id, count });

@@ -55,9 +55,14 @@ export class HighlightService {
         const activeGroups = this.filterManager.getGroups().filter(g => g.isEnabled);
         const includeFilters: FilterItem[] = [];
 
+        const enableRegexHighlight = vscode.workspace.getConfiguration('loglens').get<boolean>('enableRegexHighlight') || false;
+
         activeGroups.forEach(g => {
             g.filters.forEach(f => {
-                if (f.type === 'include' && f.isEnabled && !f.isRegex) {
+                if (f.type === 'include' && f.isEnabled) {
+                    if (f.isRegex && !enableRegexHighlight) {
+                        return;
+                    }
                     includeFilters.push(f);
                 }
             });

@@ -35,10 +35,11 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Update highlights when configuration changes (e.g. color)
 	context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(e => {
-		if (e.affectsConfiguration('loglens.highlightColor')) {
+		if (e.affectsConfiguration('loglens.highlightColor') || e.affectsConfiguration('loglens.enableRegexHighlight')) {
 			highlightService.refreshDecorationType();
 			if (vscode.window.activeTextEditor) {
 				highlightService.updateHighlights(vscode.window.activeTextEditor);
+				resultCountService.updateCounts();
 			}
 		}
 	}));
@@ -277,17 +278,23 @@ export function activate(context: vscode.ExtensionContext) {
 	// Guard
 	let isProcessing = false;
 
-	// Command: Apply Filter
-	context.subscriptions.push(vscode.commands.registerCommand('loglens.applyFilter', async () => {
+	// Command: Apply Filter (Universal or Type-specific)
+	const applyFilterHandler = async (filterType?: 'word' | 'regex') => {
 		if (isProcessing) {
 			return;
 		}
 		isProcessing = true;
 
 		try {
-			const activeGroups = filterManager.getGroups().filter(g => g.isEnabled);
+			const activeGroups = filterManager.getGroups().filter(g => {
+				if (!g.isEnabled) { return false; }
+				if (filterType === 'word') { return !g.isRegex; }
+				if (filterType === 'regex') { return g.isRegex; }
+				return true; // default handles both if no type specified (backward compatibility)
+			});
+
 			if (activeGroups.length === 0) {
-				vscode.window.showWarningMessage('No active filter groups selected.');
+				vscode.window.showWarningMessage(`No active ${filterType || 'filter'} groups selected.`);
 				return;
 			}
 
@@ -337,7 +344,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 			await vscode.window.withProgress({
 				location: vscode.ProgressLocation.Notification,
-				title: `Applying Filters on ${sourceName}...`,
+				title: `Applying ${filterType || ''} Filters on ${sourceName}...`,
 				cancellable: false
 			}, async (progress) => {
 				try {
@@ -409,7 +416,10 @@ export function activate(context: vscode.ExtensionContext) {
 		} finally {
 			isProcessing = false;
 		}
-	}));
+	};
+
+	context.subscriptions.push(vscode.commands.registerCommand('loglens.applyWordFilter', () => applyFilterHandler('word')));
+	context.subscriptions.push(vscode.commands.registerCommand('loglens.applyRegexFilter', () => applyFilterHandler('regex')));
 }
 
 function shouldKeepLine(line: string, groups: FilterGroup[]): boolean {
@@ -420,7 +430,8 @@ function shouldKeepLine(line: string, groups: FilterGroup[]): boolean {
 		for (const exclude of excludes) {
 			if (exclude.isRegex) {
 				try {
-					const regex = new RegExp(exclude.keyword);
+					const flags = exclude.caseSensitive ? '' : 'i';
+					const regex = new RegExp(exclude.keyword, flags);
 					if (regex.test(line)) {
 						return false;
 					}
@@ -443,7 +454,8 @@ function shouldKeepLine(line: string, groups: FilterGroup[]): boolean {
 			for (const include of includes) {
 				if (include.isRegex) {
 					try {
-						const regex = new RegExp(include.keyword);
+						const flags = include.caseSensitive ? '' : 'i';
+						const regex = new RegExp(include.keyword, flags);
 						if (regex.test(line)) {
 							matchFound = true;
 							break;
