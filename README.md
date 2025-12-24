@@ -1,6 +1,6 @@
 # LogLens
 
-A high-performance log analysis tool for Visual Studio Code, designed to handle large log files efficiently.
+A stream-based log analysis tool for Visual Studio Code, designed to handle large log files efficiently.
 
 ## Features
 
@@ -18,10 +18,11 @@ A high-performance log analysis tool for Visual Studio Code, designed to handle 
 
 ## Usage
 
-1. **Open** the "Log Viewer" from the Activity Bar (List Icon).
+1. **Open** "LogLens" from the Activity Bar (List Icon).
 2. **Add Group**: Click the `+` icon to create a new Filter Group (e.g., "AuthFlow").
 3. **Add Filters**: Active the group, then add "Include" or "Exclude" keywords.
    - *Tip*: Hover over items to Toggle or Delete them.
+   - *Tip*: Right-click items for options like **Change Color**, **Toggle Case Sensitivity**, or **Toggle Full Line Highlight**.
 4. **Apply**: Open your log file and click the **Play** icon in the view title.
 5. **Analyze**: A new tab opens with the results.
 
@@ -29,13 +30,15 @@ A high-performance log analysis tool for Visual Studio Code, designed to handle 
 
 - VS Code 1.104.0 or higher.
 
-## Release Notes
 
-### 0.1.0
-- Initial release.
-- Stream-based large file processing.
-- Persistent filter groups per session.
-- Inline UX for managing filters.
+## Extension Settings
+
+This extension contributes the following settings:
+
+* `loglens.maxFileSizeMB`: Maximum file size in MB for opening filtered logs as text documents. Larger files will open in safe mode. (Default: 50)
+* `loglens.highlightColor`: Background color for log highlights. (Default: `rgba(255, 255, 0, 0.3)`)
+* `loglens.tempFilePrefix`: Prefix for the filtered temp files. (Default: `filtered_`)
+* `loglens.statusBarTimeout`: Duration for status bar messages in milliseconds. (Default: 5000)
 
 ## Credits
 

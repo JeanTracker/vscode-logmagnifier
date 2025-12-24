@@ -25,6 +25,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - **Icon Rendering**: Resolved issues with LogLens icon not appearing correctly in the Activity Bar.
 - **Performance**: Disabled keyword highlighting for regex-based filters to improve performance.
 
-## [Unreleased]
-
-- Initial release
+## [0.1.0]
+- Initial release.
+- Stream-based large file processing.
+- Persistent filter groups per session.
+- Inline UX for managing filters.
