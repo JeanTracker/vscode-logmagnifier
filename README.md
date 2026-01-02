@@ -18,6 +18,7 @@ A stream-based log analysis tool for Visual Studio Code, designed to handle larg
 - **Highlighting**: Automatically highlights "include" keywords in the filtered view.
 - **Robust Detection**: Works with standard files and VS Code's optimized "Large File" read-only views.
 - **Expanded Colors**: 16 distinct colors for highlighting.
+- **Context Lines**: View matching lines with surrounding context (±3, ±5, ±9 lines).
 
 ## Usage
 
@@ -25,7 +26,7 @@ A stream-based log analysis tool for Visual Studio Code, designed to handle larg
 2. **Add Group**: Click the `+` icon to create a new Filter Group (e.g., "AuthFlow").
 3. **Add Filters**: Active the group, then add "Include" or "Exclude" keywords.
     - *Tip*: Hover over items to Toggle or Delete them.
-    - *Tip*: Right-click items for options like **Change Color**, **Toggle Case Sensitivity**, or **Toggle Highlighting Mode** (cycles: Word → Line → Whole Line).
+    - *Tip*: Right-click items for options like **Change Color**, **Toggle Case Sensitivity**, **Context Lines** (±0/3/5/9), or **Toggle Highlighting Mode** (cycles: Word → Line → Whole Line).
     - *Tip*: Click the **Arrow Up/Down** icons on a filter item to navigate to the previous or next match in the editor.
 4. **Apply**: Open your log file and click the **Play** icon in the view title.
 5. **Analyze**: A new tab opens with the results.
@@ -43,6 +44,7 @@ This extension contributes the following settings:
 * `logmagnifier.highlightColor`: Background color for log highlights. (Default: `rgba(255, 255, 0, 0.3)`)
 * `logmagnifier.tempFilePrefix`: Prefix for the filtered temp files. (Default: `filtered_`)
 * `logmagnifier.statusBarTimeout`: Duration for status bar messages in milliseconds. (Default: 5000)
+* `logmagnifier.enableRegexHighlight`: Enable highlighting for Regex filters in the editor. (Default: `false`)
 
 ## Credits
 

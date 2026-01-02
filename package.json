@@ -1,7 +1,7 @@
 {
   "name": "logmagnifier",
   "displayName": "LogMagnifier",
-  "description": "High-performance log analyzer with multi-layered filtering, keyword highlighting, and optimized large file support.",
+  "description": "A stream-based log analysis tool for Visual Studio Code, designed to handle large log files efficiently.",
   "version": "0.4.0",
   "author": "webispy@gmail.com",
   "publisher": "webispy",
