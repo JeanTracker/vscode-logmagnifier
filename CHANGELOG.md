@@ -4,6 +4,17 @@ All notable changes to the "LogMagnifier" extension will be documented in this f
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.7.0]
+
+### Added
+- **Line Numbers**: Added toggle to prepend original line numbers to filtered output.
+- **Exclude Filters**: Enhanced exclude filter behavior with navigation (prev/next match) and strike-through styling.
+- **UI**: Added color code to "Change color" tooltip and updated filter group creation icons.
+- **Large Files**: Improved large file handling with status messages.
+
+### Refactored
+- **Performance**: Optimized highlighting logic, fixed recursion loops, and improved internal structure.
+
 ## [0.6.0]
 
 ### Added
