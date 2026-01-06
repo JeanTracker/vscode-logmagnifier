@@ -4,32 +4,31 @@ A powerful log analysis tool for Visual Studio Code, featuring advanced log filt
 
 ## Features
 
-- **Large File Support**: Efficiently stream-processes large log files (50MB+) without freezing the editor.
 - **Filter Groups**: Organize your analysis with named groups of filters.
 - **Include/Exclude Logic**:
-  - **Include**: Keep lines containing specific keywords.
-  - **Exclude**: Remove lines containing specific keywords (highest priority).
+  - **Include**: Keep and highlight lines containing specific keywords.
+  - **Exclude**: Remove lines containing specific keywords (highest priority) and display matches with a strike-through.
 - **Match Counts**: Real-time count of keyword occurrences displayed in the sidebar.
 - **Search Navigation**: Quickly navigate between matches using Previous/Next buttons in the sidebar.
 - **3-Stage Highlighting**: Toggle between Word, Line, and Whole Line highlight modes.
 - **Focus Mode**: Generates a new editor tab with filtered results, enabling multi-stage filtering.
 - **Regex Support**: Advanced filtering using regular expressions.
-- **Drag & Drop**: Reorder filters intuitively.
+- **Quick Access**: Toggle Word Wrap, Minimap, Sticky Scroll, and view real-time File Size (Bytes/KB/MB) from the sidebar.
 - **Highlighting**: Automatically highlights "include" keywords in the filtered view.
-- **Robust Detection**: Works with standard files and VS Code's optimized "Large File" read-only views.
-- **Expanded Colors**: 16 distinct colors for highlighting.
+- **Expanded Colors**: 16 distinct, high-visibility colors with standardized configuration.
 - **Context Lines**: View matching lines with surrounding context (±3, ±5, ±9 lines).
 
 ## Usage
 
-1. **Open** "LogMagnifier" from the Activity Bar (List Icon).
-2. **Add Group**: Click the `+` icon to create a new Filter Group (e.g., "AuthFlow").
-3. **Add Filters**: Active the group, then add "Include" or "Exclude" keywords.
-    - *Tip*: Hover over items to Toggle or Delete them.
-    - *Tip*: Right-click items for options like **Change Color**, **Toggle Case Sensitivity**, **Context Lines** (±0/3/5/9), or **Toggle Highlighting Mode** (cycles: Word → Line → Whole Line).
+1. **Open** "LogMagnifier" from the Activity Bar (LogMagnifier icon).
+2. **Open Log File**: Open the log file you wish to analyze in the editor.
+3. **Quick Access**: Use the **Quick Access** view to toggle editor settings or check the current file size.
+4. **Add Group**: Click the folder icon to create a new Filter Group (e.g., "AuthFlow").
+5. **Add Filters**: Activate the group, then add "Include" or "Exclude" keywords using the `+` icon.
+    - *Tip*: Hover over items to toggle, delete, or access options like **Change Color**, **Toggle Case Sensitivity**, **Context Lines** (±0/3/5/9), and **Toggle Highlighting Mode**.
     - *Tip*: Click the **Arrow Up/Down** icons on a filter item to navigate to the previous or next match in the editor.
-4. **Apply**: Open your log file and click the **Play** icon in the view title.
-5. **Analyze**: A new tab opens with the results.
+6. **Apply**: Click the **Play** icon in the view title to generate filtered results.
+    - *Tip*: Toggle the **List Icon** in the view title to include original line numbers in the output.
 
 ## Requirements
 
@@ -40,11 +39,11 @@ A powerful log analysis tool for Visual Studio Code, featuring advanced log filt
 
 This extension contributes the following settings:
 
-* `logmagnifier.maxFileSizeMB`: Maximum file size in MB for opening filtered logs as text documents. Larger files will open in safe mode. (Default: 50)
-* `logmagnifier.regexHighlightColor`: Background color for Regex highlight. Can be a color string (e.g. `rgba(...)`), a preset name (e.g. `Red`), or an object with `light`/`dark` values. (Default: `rgba(255, 255, 0, 0.3)`)
+* `logmagnifier.regex.enableHighlight`: Enable highlighting for Regex filters in the editor. (Default: `false`)
+* `logmagnifier.regex.highlightColor`: Background color for Regex highlight. Can be a color string, a preset name, or an object with `light`/`dark` values.
+* `logmagnifier.highlightColors.color01` ... `color16`: Customizable light/dark mode colors for each highlight preset.
 * `logmagnifier.tempFilePrefix`: Prefix for the filtered temp files. (Default: `filtered_`)
 * `logmagnifier.statusBarTimeout`: Duration for status bar messages in milliseconds. (Default: 5000)
-* `logmagnifier.enableRegexHighlight`: Enable highlighting for Regex filters in the editor. (Default: `false`)
 
 ## Known Limitations
 
