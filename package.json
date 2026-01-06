@@ -588,39 +588,79 @@
         "command": "logmagnifier.toggleStickyScroll",
         "title": "Toggle Sticky Scroll",
         "icon": "$(pinned)"
+      },
+      {
+        "command": "logmagnifier.exportWordFilters",
+        "title": "Export Word Filters",
+        "icon": "$(repo-push)"
+      },
+      {
+        "command": "logmagnifier.importWordFilters",
+        "title": "Import Word Filters",
+        "icon": "$(repo-pull)"
+      },
+      {
+        "command": "logmagnifier.exportRegexFilters",
+        "title": "Export Regex Filters",
+        "icon": "$(repo-push)"
+      },
+      {
+        "command": "logmagnifier.importRegexFilters",
+        "title": "Import Regex Filters",
+        "icon": "$(repo-pull)"
       }
     ],
     "menus": {
       "view/title": [
         {
+          "command": "logmagnifier.exportWordFilters",
+          "when": "view == logmagnifier-filters",
+          "group": "navigation@1"
+        },
+        {
+          "command": "logmagnifier.importWordFilters",
+          "when": "view == logmagnifier-filters",
+          "group": "navigation@2"
+        },
+        {
           "command": "logmagnifier.addFilterGroup",
           "when": "view == logmagnifier-filters",
-          "group": "navigation@1"
-        },
-        {
-          "command": "logmagnifier.addRegexFilterGroup",
-          "when": "view == logmagnifier-regex-filters",
-          "group": "navigation@1"
-        },
-        {
-          "command": "logmagnifier.applyWordFilter",
-          "when": "view == logmagnifier-filters",
-          "group": "navigation@3"
-        },
-        {
-          "command": "logmagnifier.applyRegexFilter",
-          "when": "view == logmagnifier-regex-filters",
           "group": "navigation@3"
         },
         {
           "command": "logmagnifier.togglePrependLineNumbers.enable",
           "when": "(view == logmagnifier-filters || view == logmagnifier-regex-filters) && !logmagnifier.prependLineNumbersEnabled",
-          "group": "navigation@2"
+          "group": "navigation@4"
         },
         {
           "command": "logmagnifier.togglePrependLineNumbers.disable",
           "when": "(view == logmagnifier-filters || view == logmagnifier-regex-filters) && logmagnifier.prependLineNumbersEnabled",
+          "group": "navigation@4"
+        },
+        {
+          "command": "logmagnifier.applyWordFilter",
+          "when": "view == logmagnifier-filters",
+          "group": "navigation@5"
+        },
+        {
+          "command": "logmagnifier.exportRegexFilters",
+          "when": "view == logmagnifier-regex-filters",
+          "group": "navigation@1"
+        },
+        {
+          "command": "logmagnifier.importRegexFilters",
+          "when": "view == logmagnifier-regex-filters",
           "group": "navigation@2"
+        },
+        {
+          "command": "logmagnifier.addRegexFilterGroup",
+          "when": "view == logmagnifier-regex-filters",
+          "group": "navigation@3"
+        },
+        {
+          "command": "logmagnifier.applyRegexFilter",
+          "when": "view == logmagnifier-regex-filters",
+          "group": "navigation@5"
         }
       ],
       "view/item/context": [

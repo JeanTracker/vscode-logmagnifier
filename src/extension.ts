@@ -10,7 +10,7 @@ import { Logger } from './services/Logger';
 import { CommandManager } from './services/CommandManager';
 
 export function activate(context: vscode.ExtensionContext) {
-	const filterManager = new FilterManager();
+	const filterManager = new FilterManager(context);
 	const wordTreeDataProvider = new FilterTreeDataProvider(filterManager, 'word');
 	const regexTreeDataProvider = new FilterTreeDataProvider(filterManager, 'regex');
 	const quickAccessProvider = new QuickAccessProvider();

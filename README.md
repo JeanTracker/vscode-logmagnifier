@@ -17,13 +17,17 @@ A powerful log analysis tool for Visual Studio Code, featuring advanced log filt
 - **Highlighting**: Automatically highlights "include" keywords in the filtered view.
 - **Expanded Colors**: 16 distinct, high-visibility colors with standardized configuration.
 - **Context Lines**: View matching lines with surrounding context (±3, ±5, ±9 lines).
+- **Persistence**: Filters are automatically saved and restored when VS Code restarts.
+- **Import/Export**: Share and backup your filter configurations via JSON files.
 
 ## Usage
 
 1. **Open** "LogMagnifier" from the Activity Bar (LogMagnifier icon).
 2. **Open Log File**: Open the log file you wish to analyze in the editor.
 3. **Quick Access**: Use the **Quick Access** view to toggle editor settings or check the current file size.
-4. **Add Group**: Click the folder icon to create a new Filter Group (e.g., "AuthFlow").
+4. **Manage Filters**:
+    - **Add Group**: Click the folder icon to create a new Filter Group (e.g., "AuthFlow").
+    - **Import/Export**: Use the **Repo Push** (Export) and **Repo Pull** (Import) icons in the view title bar to backup or share your filters.
 5. **Add Filters**: Activate the group, then add "Include" or "Exclude" keywords using the `+` icon.
     - *Tip*: Hover over items to toggle, delete, or access options like **Change Color**, **Toggle Case Sensitivity**, **Context Lines** (±0/3/5/9), and **Toggle Highlighting Mode**.
     - *Tip*: Click the **Arrow Up/Down** icons on a filter item to navigate to the previous or next match in the editor.

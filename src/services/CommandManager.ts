@@ -8,6 +8,8 @@ import { QuickAccessProvider } from '../views/QuickAccessProvider';
 import { FilterGroup, FilterItem } from '../models/Filter';
 import { RegexUtils } from '../utils/RegexUtils';
 import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 
 export class CommandManager {
     constructor(
@@ -312,6 +314,14 @@ export class CommandManager {
         this.context.subscriptions.push(vscode.commands.registerCommand('logmagnifier.toggleFileSizeUnit', () => {
             this.quickAccessProvider.toggleFileSizeUnit();
         }));
+
+        // Command: Export Filters
+        this.context.subscriptions.push(vscode.commands.registerCommand('logmagnifier.exportWordFilters', () => this.handleExport('word')));
+        this.context.subscriptions.push(vscode.commands.registerCommand('logmagnifier.exportRegexFilters', () => this.handleExport('regex')));
+
+        // Command: Import Filters
+        this.context.subscriptions.push(vscode.commands.registerCommand('logmagnifier.importWordFilters', () => this.handleImport('word')));
+        this.context.subscriptions.push(vscode.commands.registerCommand('logmagnifier.importRegexFilters', () => this.handleImport('regex')));
     }
 
     private handleFilterToggle(item: FilterItem, action: 'enable' | 'disable' | 'toggle') {
@@ -547,6 +557,70 @@ export class CommandManager {
 
             editor.selection = new vscode.Selection(startPos, endPos);
             editor.revealRange(range, vscode.TextEditorRevealType.InCenter);
+        }
+    }
+
+    private async handleExport(mode: 'word' | 'regex') {
+        const filtersJson = this.filterManager.exportFilters(mode);
+        const fileName = `logmagnifier_${mode}_filters.json`;
+
+        const downloadsPath = path.join(os.homedir(), 'Downloads');
+        let defaultUri = vscode.Uri.file(path.join(downloadsPath, fileName));
+
+        // Fallback to homedir if Downloads doesn't exist
+        if (!fs.existsSync(downloadsPath)) {
+            defaultUri = vscode.Uri.file(path.join(os.homedir(), fileName));
+        }
+
+        const uri = await vscode.window.showSaveDialog({
+            defaultUri: defaultUri,
+            filters: { 'JSON': ['json'] },
+            title: `Export ${mode === 'word' ? 'Word' : 'Regex'} Filters`
+        });
+
+        if (uri) {
+            try {
+                fs.writeFileSync(uri.fsPath, filtersJson, 'utf8');
+                vscode.window.showInformationMessage(`${mode === 'word' ? 'Word' : 'Regex'} filters exported successfully to ${uri.fsPath}`);
+            } catch (err) {
+                vscode.window.showErrorMessage(`Failed to export filters: ${err}`);
+            }
+        }
+    }
+
+    private async handleImport(mode: 'word' | 'regex') {
+        const uris = await vscode.window.showOpenDialog({
+            canSelectMany: false,
+            filters: { 'JSON': ['json'] },
+            title: `Import ${mode === 'word' ? 'Word' : 'Regex'} Filters`
+        });
+
+        if (uris && uris.length > 0) {
+            try {
+                const json = fs.readFileSync(uris[0].fsPath, 'utf8');
+
+                const choice = await vscode.window.showQuickPick(
+                    ['Merge (Add to existing)', 'Overwrite (Replace existing)'],
+                    { placeHolder: 'Select import mode' }
+                );
+
+                if (!choice) {
+                    return;
+                }
+
+                const overwrite = choice.startsWith('Overwrite');
+                const result = this.filterManager.importFilters(json, mode, overwrite);
+
+                if (result.error) {
+                    vscode.window.showErrorMessage(`Failed to import filters: ${result.error}`);
+                } else if (result.count === 0) {
+                    vscode.window.showWarningMessage('No matching filters found in the selected file.');
+                } else {
+                    vscode.window.showInformationMessage(`Successfully imported ${result.count} ${mode === 'word' ? 'Word' : 'Regex'} filter groups.`);
+                }
+            } catch (err) {
+                vscode.window.showErrorMessage(`Failed to read filter file: ${err}`);
+            }
         }
     }
 }

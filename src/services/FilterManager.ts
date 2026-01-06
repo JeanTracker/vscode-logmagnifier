@@ -24,9 +24,10 @@ export class FilterManager {
 
     private logger: Logger;
 
-    constructor() {
+    constructor(private context: vscode.ExtensionContext) {
         this.logger = Logger.getInstance();
         this.loadColorPresets();
+        this.loadFromState();
         this.initDefaultFilters();
 
         // Listen for configuration changes
@@ -36,6 +37,18 @@ export class FilterManager {
                 this._onDidChangeFilters.fire();
             }
         });
+    }
+
+    private loadFromState() {
+        const savedGroups = this.context.globalState.get<FilterGroup[]>('logmagnifier.filterGroups');
+        if (savedGroups && Array.isArray(savedGroups)) {
+            this.groups = savedGroups;
+            this.logger.info(`Loaded ${this.groups.length} filter groups from state.`);
+        }
+    }
+
+    private saveToState() {
+        this.context.globalState.update('logmagnifier.filterGroups', this.groups);
     }
 
     private loadColorPresets() {
@@ -88,6 +101,9 @@ export class FilterManager {
     }
 
     private initDefaultFilters(): void {
+        if (this.groups.length > 0) {
+            return;
+        }
         const featuredGroup = this.addGroup('Presets', true);
         if (!featuredGroup) {
             return;
@@ -142,6 +158,7 @@ export class FilterManager {
         };
         this.groups.push(newGroup);
         this.logger.info(`Filter group added: ${name} (Regex: ${isRegex})`);
+        this.saveToState();
         this._onDidChangeFilters.fire();
         return newGroup;
     }
@@ -172,6 +189,7 @@ export class FilterManager {
             };
             group.filters.push(newFilter);
             this.logger.info(`Filter added to group '${group.name}': ${keyword} (Type: ${type}, Regex: ${isRegex})`);
+            this.saveToState();
             this._onDidChangeFilters.fire();
             return newFilter;
         }
@@ -201,6 +219,7 @@ export class FilterManager {
             const filter = group.filters.find(f => f.id === filterId);
             if (filter) {
                 filter.color = color;
+                this.saveToState();
                 this._onDidChangeFilters.fire();
             }
         }
@@ -219,6 +238,7 @@ export class FilterManager {
 
                 // Cycle: 0 (Word) -> 1 (Line) -> 2 (Whole Line) -> 0
                 filter.highlightMode = (filter.highlightMode + 1) % 3;
+                this.saveToState();
                 this._onDidChangeFilters.fire();
             }
         }
@@ -230,6 +250,7 @@ export class FilterManager {
             const filter = group.filters.find(f => f.id === filterId);
             if (filter) {
                 filter.caseSensitive = !filter.caseSensitive;
+                this.saveToState();
                 this._onDidChangeFilters.fire();
             }
         }
@@ -244,6 +265,7 @@ export class FilterManager {
                 const currentIndex = levels.indexOf(filter.contextLine ?? 0);
                 const nextIndex = (currentIndex + 1) % levels.length;
                 filter.contextLine = levels[nextIndex];
+                this.saveToState();
                 this._onDidChangeFilters.fire();
             }
         }
@@ -254,6 +276,7 @@ export class FilterManager {
         if (group) {
             group.filters = group.filters.filter(f => f.id !== filterId);
             this.logger.info(`Filter removed from group '${group.name}': ${filterId}`);
+            this.saveToState();
             this._onDidChangeFilters.fire();
         }
     }
@@ -263,6 +286,7 @@ export class FilterManager {
         if (group) {
             this.groups = this.groups.filter(g => g.id !== groupId);
             this.logger.info(`Filter group removed: ${group.name}`);
+            this.saveToState();
             this._onDidChangeFilters.fire();
         }
     }
@@ -272,6 +296,7 @@ export class FilterManager {
         if (group) {
             group.isEnabled = !group.isEnabled;
             this.logger.info(`Filter group '${group.name}' ${group.isEnabled ? 'enabled' : 'disabled'}`);
+            this.saveToState();
             this._onDidChangeFilters.fire();
         }
     }
@@ -283,6 +308,7 @@ export class FilterManager {
             if (filter) {
                 filter.isEnabled = !filter.isEnabled;
                 this.logger.info(`Filter '${filter.keyword}' in group '${group.name}' ${filter.isEnabled ? 'enabled' : 'disabled'}`);
+                this.saveToState();
                 this._onDidChangeFilters.fire();
             }
         }
@@ -305,8 +331,76 @@ export class FilterManager {
                 }
 
                 group.filters.splice(newTargetIndex, 0, activeFilter);
+                this.saveToState();
                 this._onDidChangeFilters.fire();
             }
+        }
+    }
+
+    public exportFilters(mode: 'word' | 'regex'): string {
+        const groupsToExport = this.groups
+            .filter(g => mode === 'regex' ? g.isRegex : !g.isRegex)
+            .map(g => {
+                const { resultCount, ...rest } = g;
+                return {
+                    ...rest,
+                    filters: g.filters.map(f => {
+                        const { resultCount: itemResultCount, ...itemRest } = f;
+                        return itemRest;
+                    })
+                };
+            });
+        this.logger.info(`Exporting ${groupsToExport.length} ${mode} filter groups.`);
+        return JSON.stringify(groupsToExport, null, 4);
+    }
+
+    public importFilters(json: string, mode: 'word' | 'regex', overwrite: boolean): { count: number, error?: string } {
+        this.logger.info(`Starting ${mode} filters import (Overwrite: ${overwrite})...`);
+        try {
+            const importedGroups = JSON.parse(json) as FilterGroup[];
+            if (!Array.isArray(importedGroups)) {
+                throw new Error('Invalid filter data format: expected an array of groups');
+            }
+
+            this.logger.info(`Importing ${importedGroups.length} groups from JSON.`);
+
+            if (overwrite) {
+                this.groups = this.groups.filter(g => mode === 'regex' ? !g.isRegex : !!g.isRegex);
+            }
+
+            let addedCount = 0;
+            for (const group of importedGroups) {
+                // Validate group and ensure it matches the mode
+                if (!!group.isRegex !== (mode === 'regex')) {
+                    continue;
+                }
+
+                // If not overwriting, we might want to ensure unique names or just append.
+                // Usually append with a new ID is safer.
+                const newGroupId = generateId();
+                const newGroup: FilterGroup = {
+                    ...group,
+                    id: newGroupId,
+                    filters: group.filters.map(f => ({
+                        ...f,
+                        id: generateId()
+                    }))
+                };
+
+                this.groups.push(newGroup);
+                addedCount++;
+            }
+
+            if (addedCount > 0) {
+                this.saveToState();
+                this._onDidChangeFilters.fire();
+            }
+
+            this.logger.info(`Import completed: ${addedCount} ${mode} filter groups added.`);
+            return { count: addedCount };
+        } catch (e: any) {
+            this.logger.error(`Import failed: ${e.message}`);
+            return { count: 0, error: e.message };
         }
     }
 
