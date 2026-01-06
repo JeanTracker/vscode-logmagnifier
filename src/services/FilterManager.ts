@@ -9,16 +9,17 @@ export interface ColorPreset {
     light: string;
 }
 
-const COLOR_PRESETS: ColorPreset[] = [
-    { id: 'color1', dark: 'rgba(220, 50, 47, 0.4)', light: 'rgba(220, 50, 47, 0.3)' }, // Red
-    { id: 'color2', dark: 'rgba(38, 139, 210, 0.4)', light: 'rgba(38, 139, 210, 0.3)' }, // Blue
-    { id: 'color3', dark: 'rgba(255, 140, 0, 0.4)', light: 'rgba(255, 140, 0, 0.3)' }, // Orange
-    { id: 'color4', dark: 'rgba(133, 153, 0, 0.4)', light: 'rgba(133, 153, 0, 0.3)' }, // Green
-    { id: 'color5', dark: 'rgba(108, 113, 196, 0.4)', light: 'rgba(108, 113, 196, 0.3)' }, // Violet
-    { id: 'color6', dark: 'rgba(255, 215, 0, 0.4)', light: 'rgba(255, 215, 0, 0.3)' }, // Yellow
-    { id: 'color7', dark: 'rgba(42, 161, 152, 0.4)', light: 'rgba(42, 161, 152, 0.3)' }, // Cyan
-    { id: 'color8', dark: 'rgba(255, 0, 255, 0.4)', light: 'rgba(255, 0, 255, 0.3)' }, // Magenta
-    { id: 'color9', dark: 'rgba(50, 205, 50, 0.4)', light: 'rgba(50, 205, 50, 0.3)' }, // Lime
+// Default color presets if configuration is missing
+const DEFAULT_COLOR_PRESETS: ColorPreset[] = [
+    { id: 'color01', dark: 'rgba(220, 50, 47, 0.4)', light: 'rgba(220, 50, 47, 0.3)' }, // Red
+    { id: 'color02', dark: 'rgba(38, 139, 210, 0.4)', light: 'rgba(38, 139, 210, 0.3)' }, // Blue
+    { id: 'color03', dark: 'rgba(255, 140, 0, 0.4)', light: 'rgba(255, 140, 0, 0.3)' }, // Orange
+    { id: 'color04', dark: 'rgba(133, 153, 0, 0.4)', light: 'rgba(133, 153, 0, 0.3)' }, // Green
+    { id: 'color05', dark: 'rgba(108, 113, 196, 0.4)', light: 'rgba(108, 113, 196, 0.3)' }, // Violet
+    { id: 'color06', dark: 'rgba(255, 215, 0, 0.4)', light: 'rgba(255, 215, 0, 0.3)' }, // Yellow
+    { id: 'color07', dark: 'rgba(42, 161, 152, 0.4)', light: 'rgba(42, 161, 152, 0.3)' }, // Cyan
+    { id: 'color08', dark: 'rgba(255, 0, 255, 0.4)', light: 'rgba(255, 0, 255, 0.3)' }, // Magenta
+    { id: 'color09', dark: 'rgba(50, 205, 50, 0.4)', light: 'rgba(50, 205, 50, 0.3)' }, // Lime
     { id: 'color10', dark: 'rgba(75, 0, 130, 0.4)', light: 'rgba(75, 0, 130, 0.2)' }, // Indigo
     { id: 'color11', dark: 'rgba(255, 105, 180, 0.4)', light: 'rgba(255, 105, 180, 0.3)' }, // Pink
     { id: 'color12', dark: 'rgba(0, 150, 136, 0.4)', light: 'rgba(0, 150, 136, 0.3)' }, // Teal
@@ -34,6 +35,7 @@ function generateId(): string {
 
 export class FilterManager {
     private groups: FilterGroup[] = [];
+    private colorPresets: ColorPreset[] = [];
     private _onDidChangeFilters: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
     readonly onDidChangeFilters: vscode.Event<void> = this._onDidChangeFilters.event;
 
@@ -44,7 +46,40 @@ export class FilterManager {
 
     constructor() {
         this.logger = Logger.getInstance();
+        this.loadColorPresets();
         this.initDefaultFilters();
+
+        // Listen for configuration changes
+        vscode.workspace.onDidChangeConfiguration(e => {
+            if (e.affectsConfiguration('logmagnifier.highlightColors')) {
+                this.loadColorPresets();
+                this._onDidChangeFilters.fire();
+            }
+        });
+    }
+
+    private loadColorPresets() {
+        const config = vscode.workspace.getConfiguration('logmagnifier.highlightColors');
+        const presets: ColorPreset[] = [];
+
+        for (let i = 1; i <= 16; i++) {
+            const id = `color${i.toString().padStart(2, '0')}`;
+            const configId = `color${i.toString().padStart(2, '0')}`;
+            const colorConfig = config.get<{ dark: string, light: string }>(configId);
+            if (colorConfig) {
+                presets.push({
+                    id,
+                    dark: colorConfig.dark,
+                    light: colorConfig.light
+                });
+            }
+        }
+
+        if (presets.length > 0) {
+            this.colorPresets = presets;
+        } else {
+            this.colorPresets = DEFAULT_COLOR_PRESETS;
+        }
     }
 
     private initDefaultFilters(): void {
@@ -76,15 +111,15 @@ export class FilterManager {
     }
 
     public getAvailableColors(): string[] {
-        return COLOR_PRESETS.map(p => p.id);
+        return this.colorPresets.map(p => p.id);
     }
 
     public getColorPresets(): ColorPreset[] {
-        return COLOR_PRESETS;
+        return this.colorPresets;
     }
 
     public getPresetById(id: string): ColorPreset | undefined {
-        return COLOR_PRESETS.find(p => p.id === id);
+        return this.colorPresets.find(p => p.id === id);
     }
 
     public addGroup(name: string, isRegex: boolean = false): FilterGroup | undefined {
@@ -146,13 +181,13 @@ export class FilterManager {
         );
 
         // Find first unused color
-        const availableColor = COLOR_PRESETS.find(c => !usedColors.has(c.id));
+        const availableColor = this.colorPresets.find(c => !usedColors.has(c.id));
         if (availableColor) {
             return availableColor.id;
         }
 
         // If all used, pick random from presets
-        return COLOR_PRESETS[Math.floor(Math.random() * COLOR_PRESETS.length)].id;
+        return this.colorPresets[Math.floor(Math.random() * this.colorPresets.length)].id;
     }
 
     public updateFilterColor(groupId: string, filterId: string, color: string): void {

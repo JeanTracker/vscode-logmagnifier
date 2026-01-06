@@ -42,7 +42,268 @@
         }
       },
       {
-        "title": "LogMagnifier Regex",
+        "title": "Highlight Colors",
+        "properties": {
+          "logmagnifier.highlightColors.color01": {
+            "type": "object",
+            "properties": {
+              "dark": {
+                "type": "string"
+              },
+              "light": {
+                "type": "string"
+              }
+            },
+            "default": {
+              "dark": "rgba(220, 50, 47, 0.4)",
+              "light": "rgba(220, 50, 47, 0.3)"
+            },
+            "markdownDescription": "Default `{ \"dark\": \"rgba(220, 50, 47, 0.4)\", \"light\": \"rgba(220, 50, 47, 0.3)\" }`"
+          },
+          "logmagnifier.highlightColors.color02": {
+            "type": "object",
+            "properties": {
+              "dark": {
+                "type": "string"
+              },
+              "light": {
+                "type": "string"
+              }
+            },
+            "default": {
+              "dark": "rgba(38, 139, 210, 0.4)",
+              "light": "rgba(38, 139, 210, 0.3)"
+            },
+            "markdownDescription": "Default `{ \"dark\": \"rgba(38, 139, 210, 0.4)\", \"light\": \"rgba(38, 139, 210, 0.3)\" }`"
+          },
+          "logmagnifier.highlightColors.color03": {
+            "type": "object",
+            "properties": {
+              "dark": {
+                "type": "string"
+              },
+              "light": {
+                "type": "string"
+              }
+            },
+            "default": {
+              "dark": "rgba(255, 140, 0, 0.4)",
+              "light": "rgba(255, 140, 0, 0.3)"
+            },
+            "markdownDescription": "Default `{ \"dark\": \"rgba(255, 140, 0, 0.4)\", \"light\": \"rgba(255, 140, 0, 0.3)\" }`"
+          },
+          "logmagnifier.highlightColors.color04": {
+            "type": "object",
+            "properties": {
+              "dark": {
+                "type": "string"
+              },
+              "light": {
+                "type": "string"
+              }
+            },
+            "default": {
+              "dark": "rgba(133, 153, 0, 0.4)",
+              "light": "rgba(133, 153, 0, 0.3)"
+            },
+            "markdownDescription": "Default `{ \"dark\": \"rgba(133, 153, 0, 0.4)\", \"light\": \"rgba(133, 153, 0, 0.3)\" }`"
+          },
+          "logmagnifier.highlightColors.color05": {
+            "type": "object",
+            "properties": {
+              "dark": {
+                "type": "string"
+              },
+              "light": {
+                "type": "string"
+              }
+            },
+            "default": {
+              "dark": "rgba(108, 113, 196, 0.4)",
+              "light": "rgba(108, 113, 196, 0.3)"
+            },
+            "markdownDescription": "Default `{ \"dark\": \"rgba(108, 113, 196, 0.4)\", \"light\": \"rgba(108, 113, 196, 0.3)\" }`"
+          },
+          "logmagnifier.highlightColors.color06": {
+            "type": "object",
+            "properties": {
+              "dark": {
+                "type": "string"
+              },
+              "light": {
+                "type": "string"
+              }
+            },
+            "default": {
+              "dark": "rgba(255, 215, 0, 0.4)",
+              "light": "rgba(255, 215, 0, 0.3)"
+            },
+            "markdownDescription": "Default `{ \"dark\": \"rgba(255, 215, 0, 0.4)\", \"light\": \"rgba(255, 215, 0, 0.3)\" }`"
+          },
+          "logmagnifier.highlightColors.color07": {
+            "type": "object",
+            "properties": {
+              "dark": {
+                "type": "string"
+              },
+              "light": {
+                "type": "string"
+              }
+            },
+            "default": {
+              "dark": "rgba(42, 161, 152, 0.4)",
+              "light": "rgba(42, 161, 152, 0.3)"
+            },
+            "markdownDescription": "Default `{ \"dark\": \"rgba(42, 161, 152, 0.4)\", \"light\": \"rgba(42, 161, 152, 0.3)\" }`"
+          },
+          "logmagnifier.highlightColors.color08": {
+            "type": "object",
+            "properties": {
+              "dark": {
+                "type": "string"
+              },
+              "light": {
+                "type": "string"
+              }
+            },
+            "default": {
+              "dark": "rgba(255, 0, 255, 0.4)",
+              "light": "rgba(255, 0, 255, 0.3)"
+            },
+            "markdownDescription": "Default `{ \"dark\": \"rgba(255, 0, 255, 0.4)\", \"light\": \"rgba(255, 0, 255, 0.3)\" }`"
+          },
+          "logmagnifier.highlightColors.color09": {
+            "type": "object",
+            "properties": {
+              "dark": {
+                "type": "string"
+              },
+              "light": {
+                "type": "string"
+              }
+            },
+            "default": {
+              "dark": "rgba(50, 205, 50, 0.4)",
+              "light": "rgba(50, 205, 50, 0.3)"
+            },
+            "markdownDescription": "Default `{ \"dark\": \"rgba(50, 205, 50, 0.4)\", \"light\": \"rgba(50, 205, 50, 0.3)\" }`"
+          },
+          "logmagnifier.highlightColors.color10": {
+            "type": "object",
+            "properties": {
+              "dark": {
+                "type": "string"
+              },
+              "light": {
+                "type": "string"
+              }
+            },
+            "default": {
+              "dark": "rgba(75, 0, 130, 0.4)",
+              "light": "rgba(75, 0, 130, 0.2)"
+            },
+            "markdownDescription": "Default `{ \"dark\": \"rgba(75, 0, 130, 0.4)\", \"light\": \"rgba(75, 0, 130, 0.2)\" }`"
+          },
+          "logmagnifier.highlightColors.color11": {
+            "type": "object",
+            "properties": {
+              "dark": {
+                "type": "string"
+              },
+              "light": {
+                "type": "string"
+              }
+            },
+            "default": {
+              "dark": "rgba(255, 105, 180, 0.4)",
+              "light": "rgba(255, 105, 180, 0.3)"
+            },
+            "markdownDescription": "Default `{ \"dark\": \"rgba(255, 105, 180, 0.4)\", \"light\": \"rgba(255, 105, 180, 0.3)\" }`"
+          },
+          "logmagnifier.highlightColors.color12": {
+            "type": "object",
+            "properties": {
+              "dark": {
+                "type": "string"
+              },
+              "light": {
+                "type": "string"
+              }
+            },
+            "default": {
+              "dark": "rgba(0, 150, 136, 0.4)",
+              "light": "rgba(0, 150, 136, 0.3)"
+            },
+            "markdownDescription": "Default `{ \"dark\": \"rgba(0, 150, 136, 0.4)\", \"light\": \"rgba(0, 150, 136, 0.3)\" }`"
+          },
+          "logmagnifier.highlightColors.color13": {
+            "type": "object",
+            "properties": {
+              "dark": {
+                "type": "string"
+              },
+              "light": {
+                "type": "string"
+              }
+            },
+            "default": {
+              "dark": "rgba(139, 69, 19, 0.4)",
+              "light": "rgba(139, 69, 19, 0.3)"
+            },
+            "markdownDescription": "Default `{ \"dark\": \"rgba(139, 69, 19, 0.4)\", \"light\": \"rgba(139, 69, 19, 0.3)\" }`"
+          },
+          "logmagnifier.highlightColors.color14": {
+            "type": "object",
+            "properties": {
+              "dark": {
+                "type": "string"
+              },
+              "light": {
+                "type": "string"
+              }
+            },
+            "default": {
+              "dark": "rgba(0, 191, 255, 0.4)",
+              "light": "rgba(0, 191, 255, 0.3)"
+            },
+            "markdownDescription": "Default `{ \"dark\": \"rgba(0, 191, 255, 0.4)\", \"light\": \"rgba(0, 191, 255, 0.3)\" }`"
+          },
+          "logmagnifier.highlightColors.color15": {
+            "type": "object",
+            "properties": {
+              "dark": {
+                "type": "string"
+              },
+              "light": {
+                "type": "string"
+              }
+            },
+            "default": {
+              "dark": "rgba(106, 90, 205, 0.4)",
+              "light": "rgba(106, 90, 205, 0.3)"
+            },
+            "markdownDescription": "Default `{ \"dark\": \"rgba(106, 90, 205, 0.4)\", \"light\": \"rgba(106, 90, 205, 0.3)\" }`"
+          },
+          "logmagnifier.highlightColors.color16": {
+            "type": "object",
+            "properties": {
+              "dark": {
+                "type": "string"
+              },
+              "light": {
+                "type": "string"
+              }
+            },
+            "default": {
+              "dark": "rgba(46, 204, 113, 0.4)",
+              "light": "rgba(46, 204, 113, 0.3)"
+            },
+            "markdownDescription": "Default `{ \"dark\": \"rgba(46, 204, 113, 0.4)\", \"light\": \"rgba(46, 204, 113, 0.3)\" }`"
+          }
+        }
+      },
+      {
+        "title": "Regex",
         "properties": {
           "logmagnifier.regex.enableHighlight": {
             "type": "boolean",
@@ -157,48 +418,48 @@
         "icon": "$(pass-filled)"
       },
       {
-        "command": "logmagnifier.changeFilterColor.color1",
-        "title": "Change color: color1",
+        "command": "logmagnifier.changeFilterColor.color01",
+        "title": "Change color: color01",
         "icon": "$(paintcan)"
       },
       {
-        "command": "logmagnifier.changeFilterColor.color2",
-        "title": "Change color: color2",
+        "command": "logmagnifier.changeFilterColor.color02",
+        "title": "Change color: color02",
         "icon": "$(paintcan)"
       },
       {
-        "command": "logmagnifier.changeFilterColor.color3",
-        "title": "Change color: color3",
+        "command": "logmagnifier.changeFilterColor.color03",
+        "title": "Change color: color03",
         "icon": "$(paintcan)"
       },
       {
-        "command": "logmagnifier.changeFilterColor.color4",
-        "title": "Change color: color4",
+        "command": "logmagnifier.changeFilterColor.color04",
+        "title": "Change color: color04",
         "icon": "$(paintcan)"
       },
       {
-        "command": "logmagnifier.changeFilterColor.color5",
-        "title": "Change color: color5",
+        "command": "logmagnifier.changeFilterColor.color05",
+        "title": "Change color: color05",
         "icon": "$(paintcan)"
       },
       {
-        "command": "logmagnifier.changeFilterColor.color6",
-        "title": "Change color: color6",
+        "command": "logmagnifier.changeFilterColor.color06",
+        "title": "Change color: color06",
         "icon": "$(paintcan)"
       },
       {
-        "command": "logmagnifier.changeFilterColor.color7",
-        "title": "Change color: color7",
+        "command": "logmagnifier.changeFilterColor.color07",
+        "title": "Change color: color07",
         "icon": "$(paintcan)"
       },
       {
-        "command": "logmagnifier.changeFilterColor.color8",
-        "title": "Change color: color8",
+        "command": "logmagnifier.changeFilterColor.color08",
+        "title": "Change color: color08",
         "icon": "$(paintcan)"
       },
       {
-        "command": "logmagnifier.changeFilterColor.color9",
-        "title": "Change color: color9",
+        "command": "logmagnifier.changeFilterColor.color09",
+        "title": "Change color: color09",
         "icon": "$(paintcan)"
       },
       {
@@ -399,48 +660,48 @@
           "group": "inline@3"
         },
         {
-          "command": "logmagnifier.changeFilterColor.color1",
-          "when": "view == logmagnifier-filters && (viewItem == filterItemEnabled || viewItem == filterItemDisabled || viewItem =~ /filterItem(Enabled|Disabled)_cl.*/) && viewItem =~ /.*_typeinclude/ && viewItem =~ /.*_colcolor1_.*/",
+          "command": "logmagnifier.changeFilterColor.color01",
+          "when": "view == logmagnifier-filters && (viewItem == filterItemEnabled || viewItem == filterItemDisabled || viewItem =~ /filterItem(Enabled|Disabled)_cl.*/) && viewItem =~ /.*_typeinclude/ && viewItem =~ /.*_colcolor01_.*/",
           "group": "inline@3"
         },
         {
-          "command": "logmagnifier.changeFilterColor.color2",
-          "when": "view == logmagnifier-filters && (viewItem == filterItemEnabled || viewItem == filterItemDisabled || viewItem =~ /filterItem(Enabled|Disabled)_cl.*/) && viewItem =~ /.*_typeinclude/ && viewItem =~ /.*_colcolor2_.*/",
+          "command": "logmagnifier.changeFilterColor.color02",
+          "when": "view == logmagnifier-filters && (viewItem == filterItemEnabled || viewItem == filterItemDisabled || viewItem =~ /filterItem(Enabled|Disabled)_cl.*/) && viewItem =~ /.*_typeinclude/ && viewItem =~ /.*_colcolor02_.*/",
           "group": "inline@3"
         },
         {
-          "command": "logmagnifier.changeFilterColor.color3",
-          "when": "view == logmagnifier-filters && (viewItem == filterItemEnabled || viewItem == filterItemDisabled || viewItem =~ /filterItem(Enabled|Disabled)_cl.*/) && viewItem =~ /.*_typeinclude/ && viewItem =~ /.*_colcolor3_.*/",
+          "command": "logmagnifier.changeFilterColor.color03",
+          "when": "view == logmagnifier-filters && (viewItem == filterItemEnabled || viewItem == filterItemDisabled || viewItem =~ /filterItem(Enabled|Disabled)_cl.*/) && viewItem =~ /.*_typeinclude/ && viewItem =~ /.*_colcolor03_.*/",
           "group": "inline@3"
         },
         {
-          "command": "logmagnifier.changeFilterColor.color4",
-          "when": "view == logmagnifier-filters && (viewItem == filterItemEnabled || viewItem == filterItemDisabled || viewItem =~ /filterItem(Enabled|Disabled)_cl.*/) && viewItem =~ /.*_typeinclude/ && viewItem =~ /.*_colcolor4_.*/",
+          "command": "logmagnifier.changeFilterColor.color04",
+          "when": "view == logmagnifier-filters && (viewItem == filterItemEnabled || viewItem == filterItemDisabled || viewItem =~ /filterItem(Enabled|Disabled)_cl.*/) && viewItem =~ /.*_typeinclude/ && viewItem =~ /.*_colcolor04_.*/",
           "group": "inline@3"
         },
         {
-          "command": "logmagnifier.changeFilterColor.color5",
-          "when": "view == logmagnifier-filters && (viewItem == filterItemEnabled || viewItem == filterItemDisabled || viewItem =~ /filterItem(Enabled|Disabled)_cl.*/) && viewItem =~ /.*_typeinclude/ && viewItem =~ /.*_colcolor5_.*/",
+          "command": "logmagnifier.changeFilterColor.color05",
+          "when": "view == logmagnifier-filters && (viewItem == filterItemEnabled || viewItem == filterItemDisabled || viewItem =~ /filterItem(Enabled|Disabled)_cl.*/) && viewItem =~ /.*_typeinclude/ && viewItem =~ /.*_colcolor05_.*/",
           "group": "inline@3"
         },
         {
-          "command": "logmagnifier.changeFilterColor.color6",
-          "when": "view == logmagnifier-filters && (viewItem == filterItemEnabled || viewItem == filterItemDisabled || viewItem =~ /filterItem(Enabled|Disabled)_cl.*/) && viewItem =~ /.*_typeinclude/ && viewItem =~ /.*_colcolor6_.*/",
+          "command": "logmagnifier.changeFilterColor.color06",
+          "when": "view == logmagnifier-filters && (viewItem == filterItemEnabled || viewItem == filterItemDisabled || viewItem =~ /filterItem(Enabled|Disabled)_cl.*/) && viewItem =~ /.*_typeinclude/ && viewItem =~ /.*_colcolor06_.*/",
           "group": "inline@3"
         },
         {
-          "command": "logmagnifier.changeFilterColor.color7",
-          "when": "view == logmagnifier-filters && (viewItem == filterItemEnabled || viewItem == filterItemDisabled || viewItem =~ /filterItem(Enabled|Disabled)_cl.*/) && viewItem =~ /.*_typeinclude/ && viewItem =~ /.*_colcolor7_.*/",
+          "command": "logmagnifier.changeFilterColor.color07",
+          "when": "view == logmagnifier-filters && (viewItem == filterItemEnabled || viewItem == filterItemDisabled || viewItem =~ /filterItem(Enabled|Disabled)_cl.*/) && viewItem =~ /.*_typeinclude/ && viewItem =~ /.*_colcolor07_.*/",
           "group": "inline@3"
         },
         {
-          "command": "logmagnifier.changeFilterColor.color8",
-          "when": "view == logmagnifier-filters && (viewItem == filterItemEnabled || viewItem == filterItemDisabled || viewItem =~ /filterItem(Enabled|Disabled)_cl.*/) && viewItem =~ /.*_typeinclude/ && viewItem =~ /.*_colcolor8_.*/",
+          "command": "logmagnifier.changeFilterColor.color08",
+          "when": "view == logmagnifier-filters && (viewItem == filterItemEnabled || viewItem == filterItemDisabled || viewItem =~ /filterItem(Enabled|Disabled)_cl.*/) && viewItem =~ /.*_typeinclude/ && viewItem =~ /.*_colcolor08_.*/",
           "group": "inline@3"
         },
         {
-          "command": "logmagnifier.changeFilterColor.color9",
-          "when": "view == logmagnifier-filters && (viewItem == filterItemEnabled || viewItem == filterItemDisabled || viewItem =~ /filterItem(Enabled|Disabled)_cl.*/) && viewItem =~ /.*_typeinclude/ && viewItem =~ /.*_colcolor9_.*/",
+          "command": "logmagnifier.changeFilterColor.color09",
+          "when": "view == logmagnifier-filters && (viewItem == filterItemEnabled || viewItem == filterItemDisabled || viewItem =~ /filterItem(Enabled|Disabled)_cl.*/) && viewItem =~ /.*_typeinclude/ && viewItem =~ /.*_colcolor09_.*/",
           "group": "inline@3"
         },
         {

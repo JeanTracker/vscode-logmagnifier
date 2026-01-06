@@ -16,10 +16,25 @@ export class HighlightService {
         // Initial setup if needed
     }
 
+    private getDecorationKey(colorNameOrValue: string | { light: string, dark: string } | undefined, isFullLine: boolean, textDecoration?: string, fontWeight?: string): string {
+        let colorKey = 'undefined';
+        if (typeof colorNameOrValue === 'string') {
+            const preset = this.filterManager.getPresetById(colorNameOrValue);
+            if (preset) {
+                // Ensure consistent key by creating object
+                colorKey = JSON.stringify({ light: preset.light, dark: preset.dark });
+            } else {
+                colorKey = colorNameOrValue;
+            }
+        } else if (colorNameOrValue) {
+            colorKey = JSON.stringify(colorNameOrValue);
+        }
+
+        return `${colorKey}_${isFullLine}_${textDecoration || ''}_${fontWeight || 'auto'}`;
+    }
+
     private getDecorationType(colorNameOrValue: string | { light: string, dark: string } | undefined, isFullLine: boolean = false, textDecoration?: string, fontWeight?: string): vscode.TextEditorDecorationType {
-        const colorKey = typeof colorNameOrValue === 'string' ? colorNameOrValue : (colorNameOrValue ? JSON.stringify(colorNameOrValue) : 'undefined');
-        // Use 'auto' for key if fontWeight is undefined to distinguish from explicit values
-        const key = `${colorKey}_${isFullLine}_${textDecoration || ''}_${fontWeight || 'auto'}`;
+        const key = this.getDecorationKey(colorNameOrValue, isFullLine, textDecoration, fontWeight);
 
         if (!this.decorationTypes.has(key)) {
             let decorationOptions: vscode.DecorationRenderOptions;
@@ -176,9 +191,7 @@ export class HighlightService {
 
             // Prepare keys
             const keys = decoConfigs.map(config => {
-                const colorKey = typeof config.color === 'string' ? config.color : (config.color ? JSON.stringify(config.color) : 'undefined');
-                // Use 'auto' for key if fontWeight is undefined
-                const key = `${colorKey}_${config.isFullLine}_${config.textDecoration || ''}_${config.fontWeight || 'auto'}`;
+                const key = this.getDecorationKey(config.color, config.isFullLine, config.textDecoration, config.fontWeight);
 
                 if (!rangesByDeco.has(key)) {
                     rangesByDeco.set(key, []);
