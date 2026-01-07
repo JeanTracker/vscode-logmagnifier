@@ -133,7 +133,7 @@ export class HighlightService {
                     useLineRange: true
                 });
                 decoRequests.push({
-                    color: filter.color,
+                    color: undefined,
                     isFullLine: false,
                     textDecoration: undefined,
                     fontWeight: 'bold',
