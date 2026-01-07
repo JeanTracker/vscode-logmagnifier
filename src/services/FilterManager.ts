@@ -334,27 +334,83 @@ export class FilterManager {
         }
     }
 
-    public moveFilter(groupId: string, activeFilterId: string, targetFilterId: string, position: 'before' | 'after'): void {
-        const group = this.groups.find(g => g.id === groupId);
-        if (group) {
-            const activeIndex = group.filters.findIndex(f => f.id === activeFilterId);
-            const targetIndex = group.filters.findIndex(f => f.id === targetFilterId);
+    public moveFilter(sourceGroupId: string, targetGroupId: string, activeFilterId: string, targetFilterId: string | undefined, position: 'before' | 'after' | 'append'): void {
+        const sourceGroup = this.groups.find(g => g.id === sourceGroupId);
+        const targetGroup = this.groups.find(g => g.id === targetGroupId);
 
-            if (activeIndex !== -1 && targetIndex !== -1 && activeIndex !== targetIndex) {
-                const [activeFilter] = group.filters.splice(activeIndex, 1);
+        if (!sourceGroup || !targetGroup) {
+            return;
+        }
 
-                // If we removed an item before the target, the target index shifts down by 1
-                let newTargetIndex = group.filters.findIndex(f => f.id === targetFilterId);
+        // Cross-mode prevention (Word <-> Regex)
+        // Groups must either both be regex or both be non-regex
+        if (!!sourceGroup.isRegex !== !!targetGroup.isRegex) {
+            this.logger.warn(`Cannot move filter between different modes (Source: ${sourceGroup.isRegex}, Target: ${targetGroup.isRegex})`);
+            return;
+        }
 
+        const activeIndex = sourceGroup.filters.findIndex(f => f.id === activeFilterId);
+        if (activeIndex === -1) {
+            return;
+        }
+
+        const activeFilter = sourceGroup.filters[activeIndex];
+
+        // If moving to a different group, check for duplicates
+        if (sourceGroupId !== targetGroupId) {
+            const exists = targetGroup.filters.some(f => {
+                if (targetGroup.isRegex) {
+                    return f.keyword === activeFilter.keyword && f.nickname === activeFilter.nickname;
+                }
+                // Check keyword only, ignoring type (as requested by user)
+                return f.keyword.toLowerCase() === activeFilter.keyword.toLowerCase();
+            });
+
+            if (exists) {
+                this.logger.warn(`Cannot move filter: Duplicate exists in target group '${targetGroup.name}'`);
+                // Optionally show a UI message? For now, we just abort.
+                // Since this is a void method called from drop handler, we can't easily bubble up error message to UI 
+                // without changing architecture, but logging is good.
+                vscode.window.showWarningMessage(`Filter '${activeFilter.keyword}' already exists in group '${targetGroup.name}'.`);
+                return;
+            }
+        }
+
+        // Remove from source
+        sourceGroup.filters.splice(activeIndex, 1);
+
+        // Find insertion point in target
+        // If moving within same group, references might need adjustment if using index, 
+        // but here we removed first, so indices shifting is handled.
+        // Wait, if source == target, and we removed 'activeFilter', 
+        // we need to find 'targetFilterId' index in the *modified* array
+
+        // However, if we removed it, 'targetFilterId' might be the one we just removed? No, target is distinct.
+        // But if target was *after* active in same group, its index shifted down by 1.
+        // Let's rely on finding by ID *after* removal.
+
+        let newTargetIndex = -1;
+        if (targetFilterId) {
+            newTargetIndex = targetGroup.filters.findIndex(f => f.id === targetFilterId);
+        }
+
+        // If appending or target not found (shouldn't happen if ID provided and valid)
+        if (position === 'append') {
+            targetGroup.filters.push(activeFilter);
+        } else {
+            if (newTargetIndex !== -1) {
                 if (position === 'after') {
                     newTargetIndex++;
                 }
-
-                group.filters.splice(newTargetIndex, 0, activeFilter);
-                this.saveToState();
-                this._onDidChangeFilters.fire();
+                targetGroup.filters.splice(newTargetIndex, 0, activeFilter);
+            } else {
+                // Fallback to append if target invalid
+                targetGroup.filters.push(activeFilter);
             }
         }
+
+        this.saveToState();
+        this._onDidChangeFilters.fire();
     }
 
     public exportFilters(mode: 'word' | 'regex'): string {

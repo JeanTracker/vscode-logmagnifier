@@ -162,29 +162,15 @@ export class FilterTreeDataProvider implements vscode.TreeDataProvider<TreeItem>
 
         // Case 1: Dropping on a Group
         if (this.isGroup(targetItem)) {
-            // Must be the same group (or we could allow moving to different group here easily)
-            if (activeGroup.id !== targetItem.id) {
-                // For now, restrict to same group or allow move?
-                // The requirements didn't specify, but reordering within group is priority.
-                // If dropping on valid group, let's allow moving to it (reparenting)!
-                // But I haven't implemented cross-group move in Manager yet. 
-                // Wait, moveFilter assumes same group logic in my previous implementation:
-                // "const group = this.groups.find(g => g.id === groupId);"
-                // So I can't support cross-group move with current `moveFilter`.
-                // So I must ensure target group is the same.
-                if (targetItem.id !== activeGroup.id) {
-                    return;
-                }
-            }
             // Move to end of list
-            this.filterManager.moveFilter(activeGroup.id, activeItem.id, activeGroup.filters[activeGroup.filters.length - 1].id, 'after');
+            this.filterManager.moveFilter(activeGroup.id, targetItem.id, activeItem.id, undefined, 'append');
             return;
         }
 
         // Case 2: Dropping on an Item
         const targetGroup = groups.find(g => g.filters.some(f => f.id === targetItem.id));
 
-        if (!targetGroup || activeGroup.id !== targetGroup.id) {
+        if (!targetGroup) {
             return;
         }
 
@@ -192,7 +178,7 @@ export class FilterTreeDataProvider implements vscode.TreeDataProvider<TreeItem>
             return;
         }
 
-        this.filterManager.moveFilter(activeGroup.id, activeItem.id, targetItem.id, 'after');
+        this.filterManager.moveFilter(activeGroup.id, targetGroup.id, activeItem.id, targetItem.id, 'after');
     }
 
     private isGroup(item: any): item is FilterGroup {
