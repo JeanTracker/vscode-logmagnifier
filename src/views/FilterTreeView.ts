@@ -27,7 +27,7 @@ export class FilterTreeDataProvider implements vscode.TreeDataProvider<TreeItem>
             item.contextValue = element.isEnabled ? 'filterGroupEnabled' : 'filterGroupDisabled';
             item.id = element.id;
             item.iconPath = element.isEnabled ? new vscode.ThemeIcon('pass-filled') : new vscode.ThemeIcon('circle-large-outline');
-            item.description = element.isEnabled ? '(Active)' : '(Inactive)';
+            item.description = `${element.filters.length} items`;
             return item;
         } else {
             let label = element.keyword;
