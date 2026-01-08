@@ -6,7 +6,7 @@ import { FilterItem } from '../models/Filter';
 import { Logger } from './Logger';
 import { RegexUtils } from '../utils/RegexUtils';
 
-export class HighlightService {
+export class HighlightService implements vscode.Disposable {
     // Map of color string -> DecorationType
     private decorationTypes: Map<string, { decoration: vscode.TextEditorDecorationType, config: any }> = new Map();
 

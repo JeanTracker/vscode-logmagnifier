@@ -18,6 +18,7 @@ export function activate(context: vscode.ExtensionContext) {
 	logger.info('LogMagnifier activated');
 
 	const highlightService = new HighlightService(filterManager, logger);
+	context.subscriptions.push(highlightService);
 	const resultCountService = new ResultCountService(filterManager);
 
 	let lastProcessedDoc: vscode.TextDocument | undefined;
