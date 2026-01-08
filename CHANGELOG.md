@@ -4,6 +4,22 @@ All notable changes to the "LogMagnifier" extension will be documented in this f
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.0.0]
+
+### Added
+- **Drag and Drop**: Reordering support for filter groups.
+- **Group Management**: Added support for renaming filter groups.
+- **Filter Editing**: Added support for editing existing filters.
+- **Tree View**: Added "Expand All" and "Collapse All" actions for filter groups.
+
+### Changed
+- **Quick Access**: "Toggle Word Wrap" now works per active editor tab.
+- **UI**: Improved filter item count display in group headers.
+- **Context Menus**: Refactored and simplified context menus for better usability.
+
+### Refactored
+- **Performance**: Optimized LogProcessor context buffer and match logic.
+
 ## [0.9.0]
 
 ### Added
