@@ -59,6 +59,80 @@ export class CommandManager {
             }
         }));
 
+        // Command: Rename Filter Group
+        this.context.subscriptions.push(vscode.commands.registerCommand('logmagnifier.renameFilterGroup', async (group: FilterGroup) => {
+            if (!group) {
+                return;
+            }
+            const newName = await vscode.window.showInputBox({
+                prompt: 'Enter new group name',
+                value: group.name
+            });
+            if (newName && newName !== group.name) {
+                this.filterManager.renameGroup(group.id, newName);
+            }
+        }));
+
+        // Command: Edit Filter Item
+        this.context.subscriptions.push(vscode.commands.registerCommand('logmagnifier.editFilterItem', async (item: FilterItem) => {
+            if (!item) {
+                return;
+            }
+
+            // Find parent group to determine context (needed for updates)
+            const groups = this.filterManager.getGroups();
+            const group = groups.find(g => g.filters.some(f => f.id === item.id));
+
+            if (!group) {
+                return;
+            }
+
+            if (group.isRegex) {
+                // Regex Filter: 2-step edit (Name -> Regex)
+                const newNickname = await vscode.window.showInputBox({
+                    prompt: 'Enter Name (Nickname)',
+                    value: item.nickname || ''
+                });
+
+                if (newNickname === undefined) { return; } // Cancelled
+
+                const newPattern = await vscode.window.showInputBox({
+                    prompt: 'Enter Regex Pattern',
+                    value: item.keyword,
+                    validateInput: (value) => {
+                        try {
+                            new RegExp(value);
+                            return null;
+                        } catch (e) {
+                            return 'Invalid Regular Expression';
+                        }
+                    }
+                });
+
+                if (newPattern === undefined) { return; } // Cancelled
+
+                if (newNickname !== item.nickname || newPattern !== item.keyword) {
+                    this.filterManager.updateFilter(group.id, item.id, {
+                        nickname: newNickname,
+                        keyword: newPattern
+                    });
+                }
+
+            } else {
+                // Word Filter: simple keyword edit
+                const newKeyword = await vscode.window.showInputBox({
+                    prompt: 'Enter new keyword',
+                    value: item.keyword
+                });
+
+                if (newKeyword && newKeyword !== item.keyword) {
+                    this.filterManager.updateFilter(group.id, item.id, {
+                        keyword: newKeyword
+                    });
+                }
+            }
+        }));
+
         // Command: Expand All Word Groups
         this.context.subscriptions.push(vscode.commands.registerCommand('logmagnifier.expandAllWordGroups', async () => {
             this.logger.info('CMD: expandAllWordGroups triggered');

@@ -645,6 +645,16 @@
         "icon": "$(collapse-all)"
       },
       {
+        "command": "logmagnifier.renameFilterGroup",
+        "title": "Rename Group...",
+        "icon": "$(edit)"
+      },
+      {
+        "command": "logmagnifier.editFilterItem",
+        "title": "Edit Filter...",
+        "icon": "$(edit)"
+      },
+      {
         "command": "workbench.actions.treeView.logmagnifier-filters.collapseAll",
         "title": "Collapse All"
       },
@@ -921,6 +931,16 @@
           "command": "logmagnifier.enableFilter",
           "when": "(view == logmagnifier-filters || view == logmagnifier-regex-filters) && (viewItem == filterItemDisabled || viewItem =~ /filterItemDisabled_cl.*/)",
           "group": "inline@8"
+        },
+        {
+          "command": "logmagnifier.editFilterItem",
+          "when": "(view == logmagnifier-filters || view == logmagnifier-regex-filters) && (viewItem =~ /filterItem(Enabled|Disabled)_cl.*/ || viewItem == filterItemEnabled || viewItem == filterItemDisabled)",
+          "group": "modification@1"
+        },
+        {
+          "command": "logmagnifier.renameFilterGroup",
+          "when": "(view == logmagnifier-filters || view == logmagnifier-regex-filters) && viewItem =~ /filterGroup.*/",
+          "group": "modification@1"
         },
         {
           "command": "logmagnifier.disableFilter",

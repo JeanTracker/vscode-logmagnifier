@@ -238,6 +238,34 @@ export class FilterManager {
         }
     }
 
+    public renameGroup(groupId: string, newName: string): void {
+        const group = this.groups.find(g => g.id === groupId);
+        if (group) {
+            group.name = newName;
+            this.logger.info(`Filter group renamed to: ${newName}`);
+            this.saveToState();
+            this._onDidChangeFilters.fire();
+        }
+    }
+
+    public updateFilter(groupId: string, filterId: string, updates: { keyword?: string, nickname?: string }): void {
+        const group = this.groups.find(g => g.id === groupId);
+        if (group) {
+            const filter = group.filters.find(f => f.id === filterId);
+            if (filter) {
+                if (updates.keyword !== undefined) {
+                    filter.keyword = updates.keyword;
+                }
+                if (updates.nickname !== undefined) {
+                    filter.nickname = updates.nickname;
+                }
+                this.logger.info(`Filter '${filter.id}' updated`);
+                this.saveToState();
+                this._onDidChangeFilters.fire();
+            }
+        }
+    }
+
     public toggleFilterHighlightMode(groupId: string, filterId: string): void {
         const group = this.groups.find(g => g.id === groupId);
         if (group) {
