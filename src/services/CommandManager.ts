@@ -617,6 +617,10 @@ export class CommandManager {
         // Command: Import Filters
         this.context.subscriptions.push(vscode.commands.registerCommand(Constants.Commands.ImportWordFilters, () => this.handleImport('word')));
         this.context.subscriptions.push(vscode.commands.registerCommand(Constants.Commands.ImportRegexFilters, () => this.handleImport('regex')));
+
+        // Command: Apply Filter (Word/Regex)
+        this.context.subscriptions.push(vscode.commands.registerCommand(Constants.Commands.ApplyWordFilter, () => this.applyFilter('word')));
+        this.context.subscriptions.push(vscode.commands.registerCommand(Constants.Commands.ApplyRegexFilter, () => this.applyFilter('regex')));
     }
 
     private handleFilterToggle(item: FilterItem, action: 'enable' | 'disable' | 'toggle') {
