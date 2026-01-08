@@ -56,7 +56,7 @@ export class LogProcessor {
         let processed = 0;
         let matched = 0;
 
-        const maxBeforeLines = 10;
+        const maxBeforeLines = 20; // Enough to hold maximum supported context lines (9) + safety margin
         const beforeBuffer: { line: string, index: number }[] = [];
         let afterLinesRemaining = 0;
         let lastWrittenLineIndex = -1; // Index of the last line written to output
@@ -137,43 +137,40 @@ export class LogProcessor {
      */
     public checkMatchCompiled(line: string, compiledGroups: CompiledGroup[]): { isMatched: boolean, contextLines: number } {
         let maxContext = 0;
-        let isMatched = true;
+        let anyIncludeDefined = false;
+        let matchFound = false;
 
         if (compiledGroups.length === 0) {
             return { isMatched: false, contextLines: 0 };
         }
 
         for (const group of compiledGroups) {
-            // Excludes
-            let isExcluded = false;
+            // Excludes: Highest priority. If ANY active group excludes the line, it's out.
             for (const excludeRegex of group.excludes) {
+                excludeRegex.lastIndex = 0; // Reset state for global regex
                 if (excludeRegex.test(line)) {
-                    isExcluded = true;
-                    break;
+                    return { isMatched: false, contextLines: 0 };
                 }
-            }
-            if (isExcluded) {
-                isMatched = false;
-                break;
             }
 
-            // Includes
+            // Includes: OR logic between groups. 
+            // If any group has include filters, we enter "include mode".
             if (group.includes.length > 0) {
-                let groupMatch = false;
-                let groupMaxContext = 0;
+                anyIncludeDefined = true;
                 for (const include of group.includes) {
+                    include.regex.lastIndex = 0; // Reset state for global regex
                     if (include.regex.test(line)) {
-                        groupMatch = true;
-                        groupMaxContext = Math.max(groupMaxContext, include.contextLine);
+                        matchFound = true;
+                        maxContext = Math.max(maxContext, include.contextLine);
                     }
                 }
-                if (!groupMatch) {
-                    isMatched = false;
-                    break;
-                }
-                maxContext = Math.max(maxContext, groupMaxContext);
             }
         }
+
+        // Final determination: 
+        // 1. If no include filters are defined anywhere, we include everything (that wasn't excluded).
+        // 2. If include filters are defined, we only include if at least ONE matched.
+        const isMatched = !anyIncludeDefined || matchFound;
 
         return { isMatched, contextLines: maxContext };
     }
