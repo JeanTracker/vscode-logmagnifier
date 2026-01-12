@@ -24,8 +24,16 @@ A powerful log analysis tool for Visual Studio Code, featuring advanced log filt
 - **Persistence**: Filters are automatically saved and restored when VS Code restarts.
 - **Import/Export**: Share and backup your filter configurations via JSON files.
 - **Quick Access**: Toggle Word Wrap (active tab), Minimap, Sticky Scroll, and view real-time File Size (Bytes/KB/MB) from the sidebar.
+- **ADB Logcat Integration**: Directly view and filter Android logs within VS Code.
+  - **Device Management**: View connected devices and their status.
+  - **Process Filtering**: Filter logs by specific running applications (PID) automatically.
+  - **App Control**: Uninstall apps, clear storage, and clear cache directly from the sidebar.
+  - **Session Management**: Create multiple logcat sessions with custom tag filters and priorities.
+  - **Detailed Headers**: Sessions include start time (Local/UTC) and command details.
 
 ## Usage
+
+### Filter View
 
 1. **Open** "LogMagnifier" from the Activity Bar (LogMagnifier icon).
 2. **Open Log File**: Open the log file you wish to analyze in the editor.
@@ -45,10 +53,23 @@ A powerful log analysis tool for Visual Studio Code, featuring advanced log filt
 6. **Quick Access**: Use the **Quick Access** view to toggle editor settings (Word Wrap, Minimap, Sticky Scroll) or check the current file size.
     - *Tip*: Click the **File Size** item to cycle through units (Bytes, KB, MB).
 
+### ADB Logcat View
+
+1.  **Devices**:
+    *   The "ADB Logcat" view automatically lists connected Android devices.
+    *   **Select Target App**: Click the "Target app" item under a device to filter logs by a specific running application. This uses PID filtering to show only relevant logs.
+2.  **Control App**:
+    *   When a target app is selected, a "Control app" menu appears.
+    *   Right-click or take action to **Uninstall**, **Clear Storage**, or **Clear Cache** for the selected application.
+3.  **Sessions**:
+    *   **Create Session**: Click the `+` icon on "Logcat Sessions" or run "Add Logcat Session".
+    *   **Add Tags**: Right-click a session to add specific tag filters (e.g., `MyApp:D`).
+    *   **Start/Stop**: Use the Play/Stop icons to control log capture.
+    *   **Output**: Logs are streamed to a new editor document with a detailed header.
+
 ## Requirements
 
 - VS Code 1.104.0 or higher.
-
 
 ## Extension Settings
 
