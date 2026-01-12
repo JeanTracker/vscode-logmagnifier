@@ -15,7 +15,7 @@ export class HighlightService implements vscode.Disposable {
         private logger: Logger
     ) { }
 
-    private getDecorationKey(colorNameOrValue: string | { light: string, dark: string } | undefined, isFullLine: boolean, textDecoration?: string, fontWeight?: string): string {
+    private getDecorationKey(colorNameOrValue: string | { light: string, dark: string } | undefined, isFullLine: boolean, textDecoration?: string, fontWeight?: string, textColor?: string): string {
         let colorKey = 'undefined';
         if (typeof colorNameOrValue === 'string') {
             const preset = this.filterManager.getPresetById(colorNameOrValue);
@@ -28,16 +28,16 @@ export class HighlightService implements vscode.Disposable {
             colorKey = JSON.stringify(colorNameOrValue);
         }
 
-        return `${colorKey}_${isFullLine}_${textDecoration || ''}_${fontWeight || 'auto'}`;
+        return `${colorKey}_${isFullLine}_${textDecoration || ''}_${fontWeight || 'auto'}_${textColor || 'auto'}`;
     }
 
-    private getDecorationInfo(colorNameOrValue: string | { light: string, dark: string } | undefined, isFullLine: boolean = false, textDecoration?: string, fontWeight?: string): { decoration: vscode.TextEditorDecorationType, config: any } {
-        const key = this.getDecorationKey(colorNameOrValue, isFullLine, textDecoration, fontWeight);
+    private getDecorationInfo(colorNameOrValue: string | { light: string, dark: string } | undefined, isFullLine: boolean = false, textDecoration?: string, fontWeight?: string, textColor?: string): { decoration: vscode.TextEditorDecorationType, config: any } {
+        const key = this.getDecorationKey(colorNameOrValue, isFullLine, textDecoration, fontWeight, textColor);
 
         if (!this.decorationTypes.has(key)) {
             let decorationOptions: vscode.DecorationRenderOptions;
 
-            const config = { colorNameOrValue, isFullLine, textDecoration, fontWeight };
+            const config = { colorNameOrValue, isFullLine, textDecoration, fontWeight, textColor };
 
             if (typeof colorNameOrValue === 'string') {
                 const preset = this.filterManager.getPresetById(colorNameOrValue);
@@ -47,14 +47,16 @@ export class HighlightService implements vscode.Disposable {
                         dark: { backgroundColor: preset.dark },
                         fontWeight,
                         isWholeLine: isFullLine,
-                        textDecoration
+                        textDecoration,
+                        color: textColor
                     };
                 } else {
                     decorationOptions = {
                         backgroundColor: colorNameOrValue,
                         fontWeight,
                         isWholeLine: isFullLine,
-                        textDecoration
+                        textDecoration,
+                        color: textColor
                     };
                 }
             } else if (colorNameOrValue) {
@@ -63,14 +65,16 @@ export class HighlightService implements vscode.Disposable {
                     dark: { backgroundColor: colorNameOrValue.dark },
                     fontWeight,
                     isWholeLine: isFullLine,
-                    textDecoration
+                    textDecoration,
+                    color: textColor
                 };
             } else {
                 decorationOptions = {
                     fontWeight,
                     isWholeLine: isFullLine,
                     textDecoration,
-                    opacity: '0.6'
+                    opacity: '0.6',
+                    color: textColor
                 };
             }
 
@@ -122,23 +126,35 @@ export class HighlightService implements vscode.Disposable {
             if (!filter.keyword) { return; }
 
             const isExclude = filter.type === 'exclude';
-            const decoRequests: { color: any, isFullLine: boolean, textDecoration?: string, fontWeight?: string, useLineRange: boolean }[] = [];
+            const decoRequests: { color: any, isFullLine: boolean, textDecoration?: string, fontWeight?: string, useLineRange: boolean, textColor?: string }[] = [];
 
             if (isExclude) {
-                decoRequests.push({
-                    color: undefined,
-                    isFullLine: true,
-                    textDecoration: 'line-through',
-                    fontWeight: undefined,
-                    useLineRange: true
-                });
-                decoRequests.push({
-                    color: undefined,
-                    isFullLine: false,
-                    textDecoration: undefined,
-                    fontWeight: 'bold',
-                    useLineRange: false
-                });
+                const style = filter.excludeStyle || 'line-through';
+                if (style === 'hidden') {
+                    decoRequests.push({
+                        color: undefined,
+                        isFullLine: true, // Keep full line processing to "capture" the line
+                        textDecoration: undefined,
+                        fontWeight: undefined,
+                        useLineRange: true,
+                        textColor: 'transparent'
+                    });
+                } else {
+                    decoRequests.push({
+                        color: undefined,
+                        isFullLine: true,
+                        textDecoration: 'line-through',
+                        fontWeight: undefined,
+                        useLineRange: true
+                    });
+                    decoRequests.push({
+                        color: undefined,
+                        isFullLine: false,
+                        textDecoration: undefined,
+                        fontWeight: 'bold',
+                        useLineRange: false
+                    });
+                }
             } else {
                 const mode = filter.highlightMode ?? 0;
                 decoRequests.push({
@@ -151,11 +167,11 @@ export class HighlightService implements vscode.Disposable {
             }
 
             const decoContexts = decoRequests.map(req => {
-                const key = this.getDecorationKey(req.color, req.isFullLine, req.textDecoration, req.fontWeight);
+                const key = this.getDecorationKey(req.color, req.isFullLine, req.textDecoration, req.fontWeight, req.textColor);
                 if (!rangesByDeco.has(key)) {
                     rangesByDeco.set(key, []);
                 }
-                const info = this.getDecorationInfo(req.color, req.isFullLine, req.textDecoration, req.fontWeight);
+                const info = this.getDecorationInfo(req.color, req.isFullLine, req.textDecoration, req.fontWeight, req.textColor);
                 return { key, useLineRange: req.useLineRange, decoration: info.decoration };
             });
 

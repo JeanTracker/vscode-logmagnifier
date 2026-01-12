@@ -758,6 +758,14 @@
       {
         "command": "logmagnifier.copyGroupEnabledItemsWithTag",
         "title": "As Tags (tag:...)"
+      },
+      {
+        "command": "logmagnifier.setExcludeStyle.lineThrough",
+        "title": "Line Strike"
+      },
+      {
+        "command": "logmagnifier.setExcludeStyle.hidden",
+        "title": "Hidden"
       }
     ],
     "submenus": [
@@ -776,6 +784,10 @@
       {
         "id": "logmagnifier.contextLinesSubmenu",
         "label": "Context Lines"
+      },
+      {
+        "id": "logmagnifier.excludeStyleSubmenu",
+        "label": "Change Style"
       },
       {
         "id": "logmagnifier.copyEnabledSubmenu",
@@ -828,22 +840,34 @@
         {
           "command": "logmagnifier.setFilterContextLine.none",
           "title": "None",
-          "group": "1_cl@1"
+          "group": "1_lines@1"
         },
         {
           "command": "logmagnifier.setFilterContextLine.cl3",
           "title": "±3",
-          "group": "1_cl@2"
+          "group": "1_lines@2"
         },
         {
           "command": "logmagnifier.setFilterContextLine.cl5",
           "title": "±5",
-          "group": "1_cl@3"
+          "group": "1_lines@3"
         },
         {
           "command": "logmagnifier.setFilterContextLine.cl9",
           "title": "±9",
-          "group": "1_cl@4"
+          "group": "1_lines@4"
+        }
+      ],
+      "logmagnifier.excludeStyleSubmenu": [
+        {
+          "command": "logmagnifier.setExcludeStyle.lineThrough",
+          "title": "Line Strike",
+          "group": "1_style@1"
+        },
+        {
+          "command": "logmagnifier.setExcludeStyle.hidden",
+          "title": "Hidden",
+          "group": "1_style@2"
         }
       ],
       "logmagnifier.copyEnabledSubmenu": [
@@ -963,6 +987,11 @@
         {
           "command": "logmagnifier.changeFilterColor",
           "when": "view == logmagnifier-filters && viewItem =~ /filterItem.*/ && viewItem =~ /.*_typeinclude/",
+          "group": "3_appearance@1"
+        },
+        {
+          "submenu": "logmagnifier.excludeStyleSubmenu",
+          "when": "view == logmagnifier-filters && viewItem =~ /filterItem.*/ && viewItem =~ /.*_typeexclude.*/",
           "group": "3_appearance@1"
         },
         {

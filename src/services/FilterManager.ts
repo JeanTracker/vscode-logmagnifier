@@ -479,6 +479,20 @@ export class FilterManager {
         }
     }
 
+    public setFilterExcludeStyle(groupId: string, filterId: string, style: 'line-through' | 'hidden'): void {
+        const group = this.groups.find(g => g.id === groupId);
+        if (group) {
+            const filter = group.filters.find(f => f.id === filterId);
+            if (filter) {
+                if (filter.excludeStyle !== style) {
+                    filter.excludeStyle = style;
+                    this.saveToState();
+                    this._onDidChangeFilters.fire();
+                }
+            }
+        }
+    }
+
     public setFilterHighlightMode(groupId: string, filterId: string, mode: number): void {
         const group = this.groups.find(g => g.id === groupId);
         if (group) {

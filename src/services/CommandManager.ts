@@ -457,6 +457,18 @@ export class CommandManager {
         this.context.subscriptions.push(vscode.commands.registerCommand(Constants.Commands.SetFilterType.Include, setFilterTypeHandler(Constants.FilterTypes.Include as FilterType)));
         this.context.subscriptions.push(vscode.commands.registerCommand(Constants.Commands.SetFilterType.Exclude, setFilterTypeHandler(Constants.FilterTypes.Exclude as FilterType)));
 
+        // Command: Exclude Style Setters
+        const setExcludeStyleHandler = (style: 'line-through' | 'hidden') => (item: FilterItem) => {
+            const groups = this.filterManager.getGroups();
+            let targetGroup = groups.find(g => g.filters.some(f => f.id === item.id));
+            if (targetGroup) {
+                this.filterManager.setFilterExcludeStyle(targetGroup.id, item.id, style);
+            }
+        };
+
+        this.context.subscriptions.push(vscode.commands.registerCommand('logmagnifier.setExcludeStyle.lineThrough', setExcludeStyleHandler('line-through')));
+        this.context.subscriptions.push(vscode.commands.registerCommand('logmagnifier.setExcludeStyle.hidden', setExcludeStyleHandler('hidden')));
+
         // Command: Toggle Filter Type (Legacy/Inline)
         // The original toggleFilterTypeHandler is already defined above, so we don't redefine it.
         // We just need to ensure the registrations are in the correct place if they were moved.

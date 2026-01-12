@@ -12,6 +12,7 @@ export interface FilterItem {
     caseSensitive?: boolean;
     resultCount?: number;
     contextLine?: number; // 0, 1, 3, 5, 10
+    excludeStyle?: 'line-through' | 'hidden'; // Default: line-through
 }
 
 export interface FilterGroup {
