@@ -193,7 +193,9 @@ export class HighlightService implements vscode.Disposable {
                     });
                 }
                 matchCounts.set(filter.id, count);
-            } catch (e) { /* ignore */ }
+            } catch (e) {
+                this.logger.warn(`Failed to apply filter '${filter.keyword}': ${e}`);
+            }
         });
 
         // Apply decorations

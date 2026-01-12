@@ -454,8 +454,8 @@ export class CommandManager {
             }
         };
 
-        this.context.subscriptions.push(vscode.commands.registerCommand(Constants.Commands.SetFilterType.Include, setFilterTypeHandler(Constants.FilterTypes.Include as FilterType)));
-        this.context.subscriptions.push(vscode.commands.registerCommand(Constants.Commands.SetFilterType.Exclude, setFilterTypeHandler(Constants.FilterTypes.Exclude as FilterType)));
+        this.context.subscriptions.push(vscode.commands.registerCommand(Constants.Commands.SetFilterType.Include, setFilterTypeHandler(Constants.FilterTypes.Include)));
+        this.context.subscriptions.push(vscode.commands.registerCommand(Constants.Commands.SetFilterType.Exclude, setFilterTypeHandler(Constants.FilterTypes.Exclude)));
 
         // Command: Exclude Style Setters
         const setExcludeStyleHandler = (style: 'line-through' | 'hidden') => (item: FilterItem) => {
@@ -557,7 +557,6 @@ export class CommandManager {
         this.context.subscriptions.push(vscode.commands.registerCommand(Constants.Commands.SetFilterContextLine.PlusMinus9, setContextLineHandler(9)));
 
 
-        // Command: Change Filter Color
         // Command: Change Filter Color
         const changeColorHandler = async (item: any) => {
             const groups = this.filterManager.getGroups();

@@ -81,4 +81,4 @@ LogMagnifier depends on VS Code's extension capabilities to provide highlighting
 
 ## Credits
 
-This project was built with **Google Antigravity**.
+All code in this project was written using **Google Antigravity**. Maintained by [webispy](https://github.com/webispy).

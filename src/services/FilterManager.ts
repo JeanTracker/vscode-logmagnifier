@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { Constants } from '../constants';
 import { FilterGroup, FilterItem, FilterType } from '../models/Filter';
 import { Logger } from './Logger';
+import * as crypto from 'crypto';
 
 // Solarized-inspired and distinct colors for highlights
 export interface ColorPreset {
@@ -14,10 +15,6 @@ export interface FilterProfile {
     name: string;
     groups: FilterGroup[];
     updatedAt: number;
-}
-
-function generateId(): string {
-    return Date.now().toString(36) + Math.random().toString(36).substr(2);
 }
 
 export class FilterManager {
@@ -182,7 +179,7 @@ export class FilterManager {
         }
 
         const newGroup: FilterGroup = {
-            id: generateId(),
+            id: crypto.randomUUID(),
             name,
             filters: [],
             isEnabled: false,
@@ -222,7 +219,7 @@ export class FilterManager {
             }
 
             const newFilter: FilterItem = {
-                id: generateId(),
+                id: crypto.randomUUID(),
                 keyword,
                 type,
                 isEnabled: true,
@@ -703,6 +700,7 @@ export class FilterManager {
             if (typeof parsedData === 'object' && parsedData !== null && Array.isArray(parsedData.groups)) {
                 // New format: Root is object with version and groups
                 importedGroups = parsedData.groups;
+                importedVersion = parsedData.version;
                 this.logger.info(`Importing ${importedGroups.length} groups from JSON (File Version: ${importedVersion || 'unknown'}).`);
 
                 if (overwrite) {
@@ -720,14 +718,14 @@ export class FilterManager {
 
                     // If not overwriting, we might want to ensure unique names or just append.
                     // Usually append with a new ID is safer.
-                    const newGroupId = generateId();
+                    const newGroupId = crypto.randomUUID();
                     const newGroup: FilterGroup = {
                         ...group,
                         id: newGroupId,
                         isExpanded: group.isExpanded ?? true,
                         filters: group.filters.map(f => ({
                             ...f,
-                            id: generateId()
+                            id: crypto.randomUUID()
                         }))
                     };
 

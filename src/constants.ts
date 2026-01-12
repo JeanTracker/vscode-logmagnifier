@@ -152,8 +152,8 @@ export const Constants = {
     },
 
     FilterTypes: {
-        Include: 'include',
-        Exclude: 'exclude',
+        Include: 'include' as const,
+        Exclude: 'exclude' as const,
     },
 
     ContextKeys: {
@@ -187,4 +187,6 @@ export const Constants = {
     ExtensionDisplayName: 'LogMagnifier',
 
     // Add other constants as needed
-};
+} as const;
+
+export type FilterType = typeof Constants.FilterTypes.Include | typeof Constants.FilterTypes.Exclude;

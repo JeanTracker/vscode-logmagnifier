@@ -365,6 +365,7 @@
       {
         "command": "logmagnifier.addFilterGroup",
         "title": "Add Word Filter Group",
+        "description": "Create a new group to organize word filters",
         "icon": "$(new-folder)"
       },
       {

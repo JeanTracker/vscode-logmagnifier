@@ -10,6 +10,9 @@ export interface CompiledGroup {
     excludes: RegExp[];
 }
 
+const DEFAULT_MAX_BEFORE_LINES = 20; // Maximum supported context lines (9) + safety margin
+const DEFAULT_MAX_LINE_COUNT = 999999;
+
 export class LogProcessor {
 
     public compileGroups(activeGroups: FilterGroup[]): CompiledGroup[] {
@@ -28,9 +31,14 @@ export class LogProcessor {
 
     /**
      * Processes a log file and returns filtered lines.
-     * @param inputPath Path to the input log file.
-     * @param filterGroups Active filter groups to apply.
-     * @returns A promise that resolves to the output path and statistics.
+     *
+     * @param inputPath - Absolute path to the input log file
+     * @param filterGroups - Array of filter groups to apply
+     * @param options - Optional processing options
+     * @param options.prependLineNumbers - Whether to prepend original line numbers
+     * @param options.totalLineCount - Total number of lines for padding calculation
+     * @returns Promise resolving to output path and statistics
+     * @throws Error if file cannot be read or written
      */
     public async processFile(inputPath: string, filterGroups: FilterGroup[], options?: { prependLineNumbers?: boolean, totalLineCount?: number }): Promise<{ outputPath: string, processed: number, matched: number }> {
         const fileStream = fs.createReadStream(inputPath, { encoding: 'utf8' });
@@ -56,14 +64,14 @@ export class LogProcessor {
         let processed = 0;
         let matched = 0;
 
-        const maxBeforeLines = 20; // Enough to hold maximum supported context lines (9) + safety margin
+        const maxBeforeLines = DEFAULT_MAX_BEFORE_LINES;
         const beforeBuffer: { line: string, index: number }[] = [];
         let afterLinesRemaining = 0;
         let lastWrittenLineIndex = -1; // Index of the last line written to output
 
         // Padding calculation
         const prependLineNumbers = options?.prependLineNumbers || false;
-        const totalLineCount = options?.totalLineCount || 999999;
+        const totalLineCount = options?.totalLineCount || DEFAULT_MAX_LINE_COUNT;
         const padding = totalLineCount.toString().length;
 
         const formatLine = (line: string, index: number) => {

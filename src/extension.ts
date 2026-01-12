@@ -38,14 +38,18 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	// Sync expansion state
+	const isGroup = (item: any): item is import('./models/Filter').FilterGroup => {
+		return (item as import('./models/Filter').FilterGroup).filters !== undefined;
+	};
+
 	const setupExpansionSync = (view: vscode.TreeView<any>) => {
 		context.subscriptions.push(view.onDidExpandElement(e => {
-			if ((e.element as any).filters) { // Check if group
+			if (isGroup(e.element)) { // Check if group
 				filterManager.setGroupExpanded(e.element.id, true);
 			}
 		}));
 		context.subscriptions.push(view.onDidCollapseElement(e => {
-			if ((e.element as any).filters) {
+			if (isGroup(e.element)) {
 				filterManager.setGroupExpanded(e.element.id, false);
 			}
 		}));

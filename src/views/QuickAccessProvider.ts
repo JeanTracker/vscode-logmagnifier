@@ -84,7 +84,7 @@ export class QuickAccessProvider implements vscode.TreeDataProvider<vscode.TreeI
         return item;
     }
 
-    private _fileSizeUnit: 'bytes' | 'kb' | 'mb' = 'bytes';
+    private fileSizeUnit: 'bytes' | 'kb' | 'mb' = 'bytes';
 
     public toggleFileSizeUnit(): void {
         const size = this.getFileSize();
@@ -93,7 +93,7 @@ export class QuickAccessProvider implements vscode.TreeDataProvider<vscode.TreeI
         const safeSize = size ?? 0;
 
         const order: ('bytes' | 'kb' | 'mb')[] = ['bytes', 'kb', 'mb'];
-        const currentIndex = order.indexOf(this._fileSizeUnit);
+        const currentIndex = order.indexOf(this.fileSizeUnit);
 
         // Find next valid unit
         for (let i = 1; i <= order.length; i++) {
@@ -101,7 +101,7 @@ export class QuickAccessProvider implements vscode.TreeDataProvider<vscode.TreeI
             const nextUnit = order[nextIndex];
 
             if (nextUnit === 'bytes') {
-                this._fileSizeUnit = 'bytes';
+                this.fileSizeUnit = 'bytes';
                 break;
             }
 
@@ -114,7 +114,7 @@ export class QuickAccessProvider implements vscode.TreeDataProvider<vscode.TreeI
 
             // Check if it is at least 1 unit (preventing 0.8 MB -> 1 MB switch)
             if (value >= 1) {
-                this._fileSizeUnit = nextUnit;
+                this.fileSizeUnit = nextUnit;
                 break;
             }
             // If 0, continue to next unit in loop
@@ -218,7 +218,7 @@ export class QuickAccessProvider implements vscode.TreeDataProvider<vscode.TreeI
             let value = '';
             let unit = '';
 
-            switch (this._fileSizeUnit) {
+            switch (this.fileSizeUnit) {
                 case 'bytes':
                     value = safeSize.toLocaleString();
                     unit = Constants.Labels.Bytes;
