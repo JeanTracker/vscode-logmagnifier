@@ -1,6 +1,17 @@
 # Change Log
 
+## [1.1.0]
 
+### Added
+- **Profiles**: Enhanced filter profile management and persistence.
+- **Export**: Added support for exporting individual filter groups.
+- **Context Menu**: Added copy commands, and enable/disable all items for filter groups.
+- **Exclude Style**: Added "Hidden" style for exclude filters.
+- **Quick Access**: Added occurrences highlight toggle.
+
+### Changed
+- **Quick Access**: Improved layout and item naming for better usability.
+- **Refactor**: Enhanced type safety and usage of core services.
 
 ## [1.0.0]
 
