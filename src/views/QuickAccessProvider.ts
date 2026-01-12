@@ -42,8 +42,9 @@ export class QuickAccessProvider implements vscode.TreeDataProvider<vscode.TreeI
             this.createToggleItem(Constants.Labels.Minimap, !!minimapEnabled, Constants.Commands.ToggleMinimap, 'layout-sidebar-right'),
             this.createToggleItem(Constants.Labels.StickyScroll, !!stickyScrollEnabled, Constants.Commands.ToggleStickyScroll, 'pinned'),
             this.createOccurrencesHighlightItem(config),
-            this.createProfileItem(),
-            this.createFileSizeItem()
+            this.createFileSizeItem(),
+            this.createSeparator(),
+            this.createProfileItem()
         ]);
     }
 
@@ -58,11 +59,22 @@ export class QuickAccessProvider implements vscode.TreeDataProvider<vscode.TreeI
         return item;
     }
 
+
+    private createSeparator(): vscode.TreeItem {
+        const item = new vscode.TreeItem('', vscode.TreeItemCollapsibleState.None);
+        item.label = '──────────────';
+        item.contextValue = 'separator';
+        item.tooltip = undefined;
+        // Make it unclickable/disabled appearance if possible, but VS Code TreeItem doesn't have "disabled" state that prevents selection easily without command.
+        // We just don't assign a command.
+        return item;
+    }
+
     private createProfileItem(): vscode.TreeItem {
         const activeProfile = this.filterManager.getActiveProfile();
-        const label = `Profile: ${activeProfile}`;
+        const label = `Filter Profile: ${activeProfile}`;
         const item = new vscode.TreeItem(label, vscode.TreeItemCollapsibleState.None);
-        item.iconPath = new vscode.ThemeIcon('book');
+        item.iconPath = new vscode.ThemeIcon('versions');
         item.tooltip = 'Click to switch or manage profiles';
         item.command = {
             command: Constants.Commands.ManageProfiles,
