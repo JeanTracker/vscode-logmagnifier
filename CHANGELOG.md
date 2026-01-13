@@ -1,5 +1,11 @@
 # Change Log
 
+## [1.2.1]
+
+### Changed
+- **Logcat Header**: Refine session header format and separator.
+- **Session Management**: Ensure new editor tab on session restart if saved.
+
 ## [1.2.0]
 
 ### Added
