@@ -1,5 +1,14 @@
 # Change Log
 
+## [1.2.2]
+
+### Added
+- **Logcat**: Add action button to toggle between starting logcat from "now" or "beginning".
+
+### Fixed
+- **Filters**: Fix highlight counts persisting after file closure and ensure filter context is correctly applied.
+- **Logcat**: Fix incorrect tab name when applying word filters to a logcat session.
+
 ## [1.2.1]
 
 ### Changed
