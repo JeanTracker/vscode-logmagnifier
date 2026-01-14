@@ -2,7 +2,7 @@
 import * as vscode from 'vscode';
 import { LogcatService } from './LogcatService';
 import { LogcatTreeProvider } from '../views/LogcatTreeProvider';
-import { AdbDevice, LogcatSession, LogcatTag, LogPriority, ControlActionItem } from '../models/LogcatModels';
+import { AdbDevice, LogcatSession, LogcatTag, LogPriority, ControlActionItem, ControlDeviceActionItem } from '../models/LogcatModels';
 import * as crypto from 'crypto';
 
 export class LogcatCommandManager {
@@ -320,6 +320,27 @@ export class LogcatCommandManager {
                     }
                 } catch (e: any) {
                     vscode.window.showErrorMessage(`Dumpsys activity failed: ${e.message}`);
+                }
+            }
+        }));
+
+        this.context.subscriptions.push(vscode.commands.registerCommand('logmagnifier.control.screenshot', async (item: ControlDeviceActionItem) => {
+            if (item && item.device) {
+                const os = require('os');
+                const path = require('path');
+                const tmpDir = os.tmpdir();
+                // Format: screenshot_YYYYMMDD_HHMMSS.png
+                const now = new Date();
+                const filename = `screenshot_${now.getFullYear()}${(now.getMonth() + 1).toString().padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}_${now.getHours().toString().padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}${now.getSeconds().toString().padStart(2, '0')}.png`;
+                const localPath = path.join(tmpDir, filename);
+
+                const success = await this.logcatService.captureScreenshot(item.device.id, localPath);
+                if (success) {
+                    // Open the image
+                    const uri = vscode.Uri.file(localPath);
+                    await vscode.commands.executeCommand('vscode.open', uri);
+                } else {
+                    vscode.window.showErrorMessage('Screenshot capture failed.');
                 }
             }
         }));

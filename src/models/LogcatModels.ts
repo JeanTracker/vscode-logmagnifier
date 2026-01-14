@@ -65,4 +65,17 @@ export interface ControlActionItem {
     device: AdbDevice;
 }
 
-export type LogcatTreeItem = AdbDevice | LogcatSession | LogcatTag | TargetAppItem | SessionGroupItem | ControlAppItem | ControlActionItem | DumpsysGroupItem;
+export interface ControlDeviceItem {
+    type: 'controlDevice';
+    device: AdbDevice;
+}
+
+export type ControlDeviceActionType = 'screenshot';
+
+export interface ControlDeviceActionItem {
+    type: 'controlDeviceAction';
+    actionType: ControlDeviceActionType;
+    device: AdbDevice;
+}
+
+export type LogcatTreeItem = AdbDevice | LogcatSession | LogcatTag | TargetAppItem | SessionGroupItem | ControlAppItem | ControlActionItem | DumpsysGroupItem | ControlDeviceItem | ControlDeviceActionItem;

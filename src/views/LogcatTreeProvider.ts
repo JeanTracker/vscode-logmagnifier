@@ -1,7 +1,7 @@
 
 import * as vscode from 'vscode';
 import { LogcatService } from '../services/LogcatService';
-import { AdbDevice, LogcatSession, LogcatTag, LogcatTreeItem, TargetAppItem, SessionGroupItem, ControlAppItem, ControlActionItem, DumpsysGroupItem } from '../models/LogcatModels';
+import { AdbDevice, LogcatSession, LogcatTag, LogcatTreeItem, TargetAppItem, SessionGroupItem, ControlAppItem, ControlActionItem, DumpsysGroupItem, ControlDeviceItem, ControlDeviceActionItem } from '../models/LogcatModels';
 
 
 export class LogcatTreeProvider implements vscode.TreeDataProvider<LogcatTreeItem> {
@@ -49,7 +49,7 @@ export class LogcatTreeProvider implements vscode.TreeDataProvider<LogcatTreeIte
         } else if (this.isSessionGroup(element)) {
             const item = new vscode.TreeItem('Logcat Sessions', vscode.TreeItemCollapsibleState.Expanded);
             item.contextValue = 'sessionGroup';
-            // Find if there are any sessions to maybe affect icon? No need.
+            item.iconPath = new vscode.ThemeIcon('multiple-windows');
             return item;
         } else if (this.isSession(element)) {
             const stateIcon = element.isRunning ? 'debug-stop' : 'play';
@@ -136,6 +136,21 @@ export class LogcatTreeProvider implements vscode.TreeDataProvider<LogcatTreeIte
                 item.contextValue = 'tag_editable';
             }
             return item;
+        } else if (this.isControlDevice(element)) {
+            const item = new vscode.TreeItem('Control device', vscode.TreeItemCollapsibleState.Collapsed);
+            item.contextValue = 'controlDevice';
+            item.iconPath = new vscode.ThemeIcon('tools');
+            return item;
+        } else if (this.isControlDeviceAction(element)) {
+            const item = new vscode.TreeItem('Screenshot', vscode.TreeItemCollapsibleState.None);
+            item.contextValue = 'controlDeviceAction';
+            item.iconPath = new vscode.ThemeIcon('device-camera');
+            item.command = {
+                command: 'logmagnifier.control.screenshot',
+                title: 'Screenshot',
+                arguments: [element]
+            };
+            return item;
         }
         return new vscode.TreeItem('Unknown');
     }
@@ -144,10 +159,13 @@ export class LogcatTreeProvider implements vscode.TreeDataProvider<LogcatTreeIte
         if (!element) {
             return this.devices;
         } else if (this.isDevice(element)) {
-            // Return TargetApp, potentially ControlApp, and SessionGroup
+            // Return TargetApp, potentially ControlApp, ControlDevice, and SessionGroup
             const children: LogcatTreeItem[] = [
                 { type: 'targetApp', device: element } as TargetAppItem
             ];
+
+            // Control Device (New)
+            children.push({ type: 'controlDevice', device: element } as ControlDeviceItem);
 
             if (element.targetApp && element.targetApp !== 'all') {
                 children.push({ type: 'controlApp', device: element } as ControlAppItem);
@@ -167,6 +185,10 @@ export class LogcatTreeProvider implements vscode.TreeDataProvider<LogcatTreeIte
                 { type: 'controlAction', actionType: 'dumpsys', device: element.device } as ControlActionItem,
                 { type: 'controlAction', actionType: 'dumpsysMeminfo', device: element.device } as ControlActionItem,
                 { type: 'controlAction', actionType: 'dumpsysActivity', device: element.device } as ControlActionItem
+            ];
+        } else if (this.isControlDevice(element)) {
+            return [
+                { type: 'controlDeviceAction', actionType: 'screenshot', device: element.device } as ControlDeviceActionItem
             ];
         } else if (this.isSessionGroup(element)) {
             return this.logcatService.getSessions().filter(s => s.device.id === element.device.id);
@@ -207,5 +229,13 @@ export class LogcatTreeProvider implements vscode.TreeDataProvider<LogcatTreeIte
 
     private isControlAction(element: LogcatTreeItem): element is ControlActionItem {
         return 'type' in element && element.type === 'controlAction';
+    }
+
+    private isControlDevice(element: LogcatTreeItem): element is ControlDeviceItem {
+        return 'type' in element && element.type === 'controlDevice';
+    }
+
+    private isControlDeviceAction(element: LogcatTreeItem): element is ControlDeviceActionItem {
+        return 'type' in element && element.type === 'controlDeviceAction';
     }
 }

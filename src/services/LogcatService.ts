@@ -602,4 +602,51 @@ export class LogcatService {
             });
         });
     }
+
+    public async captureScreenshot(deviceId: string, localOutputPath: string): Promise<boolean> {
+        return new Promise(async (resolve) => {
+            const adbPath = this.getAdbPath();
+            const remotePath = `/data/local/tmp/vscode_screenshot_${Date.now()}.png`;
+
+            this.logger.info(`[ADB] Capturing screenshot on ${deviceId} to ${remotePath}`);
+
+            // 1. Capture to remote temp file
+            const captureCmd = `${adbPath} -s ${deviceId} shell screencap -p ${remotePath}`;
+            this.logger.info(`[ADB] Command: ${captureCmd}`);
+            cp.exec(captureCmd, async (err) => {
+                if (err) {
+                    this.logger.error(`[ADB] Screenshot capture failed: ${err.message}`);
+                    resolve(false);
+                    return;
+                }
+
+                // 2. Pull file to local
+                this.logger.info(`[ADB] Pulling screenshot to ${localOutputPath}`);
+                const pullCmd = `${adbPath} -s ${deviceId} pull ${remotePath} "${localOutputPath}"`;
+                this.logger.info(`[ADB] Command: ${pullCmd}`);
+                cp.exec(pullCmd, async (pullErr) => {
+                    if (pullErr) {
+                        this.logger.error(`[ADB] Screenshot pull failed: ${pullErr.message}`);
+                        // Try cleanup anyway
+                        const cleanupCmd = `${adbPath} -s ${deviceId} shell rm ${remotePath}`;
+                        this.logger.info(`[ADB] Command (cleanup): ${cleanupCmd}`);
+                        cp.exec(cleanupCmd);
+                        resolve(false);
+                        return;
+                    }
+
+                    // 3. Cleanup remote file
+                    this.logger.info(`[ADB] Cleaning up ${remotePath}`);
+                    const cleanupCmd = `${adbPath} -s ${deviceId} shell rm ${remotePath}`;
+                    this.logger.info(`[ADB] Command: ${cleanupCmd}`);
+                    cp.exec(cleanupCmd, (cleanErr) => {
+                        if (cleanErr) {
+                            this.logger.warn(`[ADB] Failed to cleanup remote screenshot: ${cleanErr.message}`);
+                        }
+                        resolve(true);
+                    });
+                });
+            });
+        });
+    }
 }
