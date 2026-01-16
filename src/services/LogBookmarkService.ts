@@ -103,6 +103,14 @@ export class LogBookmarkService implements vscode.Disposable {
         }
     }
 
+    public getDocumentLineCount(uri: vscode.Uri): number {
+        const doc = vscode.workspace.textDocuments.find(d => d.uri.toString() === uri.toString());
+        if (doc) {
+            return doc.lineCount;
+        }
+        return 0;
+    }
+
     private updateDecorations(editor: vscode.TextEditor) {
         const key = editor.document.uri.toString();
         if (this._bookmarks.has(key)) {

@@ -391,16 +391,12 @@
         {
           "id": "logmagnifier-bookmark",
           "name": "Log Bookmark",
-          "icon": "$(bookmark)"
+          "icon": "$(bookmark)",
+          "type": "webview"
         }
       ]
     },
-    "viewsWelcome": [
-      {
-        "view": "logmagnifier-bookmark",
-        "contents": "No bookmarks yet. Right-click on a line in an editor and select 'Add line to LogMagnifier bookmark'."
-      }
-    ],
+    "viewsWelcome": [],
     "commands": [
       {
         "command": "logmagnifier.addFilterGroup",
