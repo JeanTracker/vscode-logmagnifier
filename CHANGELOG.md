@@ -1,5 +1,17 @@
 # Change Log
 
+## [1.4.1]
+
+### Added
+- **Bookmarks**: Added "Add matches to bookmark" context menu action.
+- **Logcat**: Display "No devices connected" message when device list is empty.
+
+### Changed
+- **Bookmarks**: Enhanced file-level bookmark management.
+
+### Fixed
+- **UI**: Fixed bookmark welcome message casing.
+
 ## [1.4.0]
 
 ### Added
