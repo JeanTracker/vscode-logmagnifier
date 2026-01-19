@@ -338,6 +338,16 @@
         }
       },
       {
+        "title": "Bookmark",
+        "properties": {
+          "logmagnifier.bookmark.maxMatches": {
+            "type": "number",
+            "default": 500,
+            "description": "Maximum number of matches to add to bookmarks at once."
+          }
+        }
+      },
+      {
         "title": "Android",
         "properties": {
           "logmagnifier.adbPath": {
@@ -899,6 +909,11 @@
         "icon": "$(tag)"
       },
       {
+        "command": "logmagnifier.addSelectionMatchesToBookmark",
+        "title": "Add Matches to LogMagnifier Bookmark",
+        "icon": "$(bookmark)"
+      },
+      {
         "command": "logmagnifier.editLogcatTag",
         "title": "Edit Tag",
         "icon": "$(edit)"
@@ -1111,11 +1126,16 @@
         {
           "command": "logmagnifier.addSelectionToFilter",
           "when": "editorHasSelection",
-          "group": "logmagnifier@2"
+          "group": "logmagnifier@3"
         },
         {
           "command": "logmagnifier.addBookmark",
           "group": "logmagnifier@1"
+        },
+        {
+          "command": "logmagnifier.addSelectionMatchesToBookmark",
+          "when": "editorHasSelection",
+          "group": "logmagnifier@2"
         }
       ],
       "view/item/context": [
@@ -1393,6 +1413,11 @@
           "command": "logmagnifier.removeBookmark",
           "when": "view == logmagnifier-bookmark && viewItem == bookmark",
           "group": "inline"
+        },
+        {
+          "command": "logmagnifier.addSelectionMatchesToBookmark",
+          "title": "Add matches to bookmark",
+          "icon": "$(bookmark)"
         }
       ]
     }

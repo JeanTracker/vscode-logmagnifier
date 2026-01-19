@@ -135,6 +135,7 @@ export const Constants = {
         // Bookmark
         AddBookmark: 'logmagnifier.addBookmark',
         AddMatchListToBookmark: 'logmagnifier.addMatchListToBookmark',
+        AddSelectionMatchesToBookmark: 'logmagnifier.addSelectionMatchesToBookmark',
         RemoveBookmark: 'logmagnifier.removeBookmark',
         JumpToBookmark: 'logmagnifier.jumpToBookmark',
 
@@ -192,6 +193,7 @@ export const Constants = {
         Bookmark: {
             Section: 'bookmark',
             HighlightColor: 'rgba(255, 0, 0, 0.5)', // Red like the icon
+            MaxMatches: 'bookmark.maxMatches',
         },
         Editor: {
             Section: 'editor',

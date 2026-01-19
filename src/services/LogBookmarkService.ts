@@ -82,6 +82,54 @@ export class LogBookmarkService implements vscode.Disposable {
         this.saveToState();
     }
 
+    public addBookmarks(editor: vscode.TextEditor, lines: number[]) {
+        const uri = editor.document.uri;
+        const key = uri.toString();
+
+        if (!this._bookmarks.has(key)) {
+            this._bookmarks.set(key, []);
+        }
+
+        const list = this._bookmarks.get(key)!;
+        let addedCount = 0;
+
+        for (const line of lines) {
+            // Check if already exists
+            if (list.some(b => b.line === line)) {
+                continue;
+            }
+
+            const lineContent = editor.document.lineAt(line).text;
+            const bookmark: BookmarkItem = {
+                id: Date.now().toString() + Math.random().toString().slice(2),
+                uri: uri,
+                line: line,
+                content: lineContent.trim()
+            };
+
+            list.push(bookmark);
+            addedCount++;
+        }
+
+        if (addedCount > 0) {
+            // Sort by line number
+            list.sort((a, b) => a.line - b.line);
+
+            this._onDidChangeBookmarks.fire();
+
+            // Update decorations for all visible editors displaying this document
+            vscode.window.visibleTextEditors.forEach(e => {
+                if (e.document.uri.toString() === uri.toString()) {
+                    this.updateDecorations(e);
+                }
+            });
+
+            this.saveToState();
+        }
+
+        return addedCount;
+    }
+
     public removeBookmark(item: BookmarkItem) {
         const key = item.uri.toString();
         if (this._bookmarks.has(key)) {
@@ -115,6 +163,14 @@ export class LogBookmarkService implements vscode.Disposable {
         if (this._bookmarks.has(key)) {
             this._bookmarks.delete(key);
             this._onDidChangeBookmarks.fire();
+
+            // Update decorations for all visible editors displaying this document
+            vscode.window.visibleTextEditors.forEach(e => {
+                if (e.document.uri.toString() === uri.toString()) {
+                    this.updateDecorations(e);
+                }
+            });
+
             this.saveToState();
         }
     }

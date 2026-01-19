@@ -20,6 +20,7 @@ export class LogBookmarkCommandManager {
         context.subscriptions.push(vscode.commands.registerCommand(Constants.Commands.RemoveBookmark, (item: BookmarkItem) => this.removeBookmark(item)));
         context.subscriptions.push(vscode.commands.registerCommand(Constants.Commands.JumpToBookmark, (item: BookmarkItem) => this.jumpToBookmark(item)));
         context.subscriptions.push(vscode.commands.registerCommand(Constants.Commands.AddMatchListToBookmark, (filter: FilterItem) => this.addMatchListToBookmark(filter)));
+        context.subscriptions.push(vscode.commands.registerCommand(Constants.Commands.AddSelectionMatchesToBookmark, () => this.addSelectionMatchesToBookmark()));
         context.subscriptions.push(vscode.commands.registerCommand('logmagnifier.removeBookmarkFile', (uri: vscode.Uri) => this.removeBookmarkFile(uri)));
         context.subscriptions.push(vscode.commands.registerCommand('logmagnifier.copyBookmarkFile', (uri: vscode.Uri, withLineNumber: boolean) => this.copyBookmarkFile(uri, withLineNumber)));
         context.subscriptions.push(vscode.commands.registerCommand('logmagnifier.openBookmarkFile', (uri: vscode.Uri, withLineNumber: boolean) => this.openBookmarkFile(uri, withLineNumber)));
@@ -30,6 +31,60 @@ export class LogBookmarkCommandManager {
         if (editor) {
             const line = editor.selection.active.line;
             this.bookmarkService.addBookmark(editor, line);
+        }
+    }
+
+    private async addSelectionMatchesToBookmark() {
+        const editor = vscode.window.activeTextEditor;
+        if (!editor) {
+            return;
+        }
+
+        const selection = editor.selection;
+        if (selection.isEmpty) {
+            vscode.window.showInformationMessage('Please select a text to search for matches.');
+            return;
+        }
+
+        const selectedText = editor.document.getText(selection);
+        if (!selectedText) {
+            return;
+        }
+
+        // Limit the number of lines to add
+        const config = vscode.workspace.getConfiguration(Constants.Configuration.Section);
+        // Default to 500 if not set, though package.json has default
+        const MAX_MATCHES_TO_ADD = config.get<number>('bookmark.maxMatches', 500);
+
+        const text = editor.document.getText();
+        const lines = text.split(/\r?\n/);
+        const matchedLines: number[] = [];
+
+        // Escape regex characters for exact match
+        const escapedText = selectedText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(escapedText);
+
+        // Iterate line by line to match
+        for (let i = 0; i < lines.length; i++) {
+            const lineContent = lines[i];
+
+            if (regex.test(lineContent)) {
+                matchedLines.push(i);
+                if (matchedLines.length >= MAX_MATCHES_TO_ADD) {
+                    break;
+                }
+            }
+        }
+
+        if (matchedLines.length > 0) {
+            const addedCount = this.bookmarkService.addBookmarks(editor, matchedLines);
+            if (matchedLines.length >= MAX_MATCHES_TO_ADD) {
+                vscode.window.showInformationMessage(`Added ${addedCount} bookmarks (Limited to first ${MAX_MATCHES_TO_ADD} matches).`);
+            } else {
+                vscode.window.showInformationMessage(`Added ${addedCount} bookmarks.`);
+            }
+        } else {
+            vscode.window.showInformationMessage('No matches found in the active editor.');
         }
     }
 
