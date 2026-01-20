@@ -422,6 +422,11 @@
         "command": "logmagnifier.previousMatch",
         "key": "ctrl+cmd+[",
         "when": "editorTextFocus || focusedView == logmagnifier-filters || focusedView == logmagnifier-regex-filters"
+      },
+      {
+        "command": "logmagnifier.removeMatchesWithSelection",
+        "key": "ctrl+cmd+r",
+        "when": "editorTextFocus && editorHasSelection"
       }
     ],
     "commands": [
@@ -927,6 +932,11 @@
         "command": "logmagnifier.control.toggleShowTouches",
         "title": "Toggle Show Touches",
         "icon": "$(check)"
+      },
+      {
+        "command": "logmagnifier.removeMatchesWithSelection",
+        "title": "Remove Lines Matching Selection",
+        "icon": "$(trash)"
       }
     ],
     "submenus": [
@@ -1136,6 +1146,11 @@
           "command": "logmagnifier.addSelectionMatchesToBookmark",
           "when": "editorHasSelection",
           "group": "logmagnifier@2"
+        },
+        {
+          "command": "logmagnifier.removeMatchesWithSelection",
+          "when": "editorHasSelection",
+          "group": "logmagnifier@4"
         }
       ],
       "view/item/context": [

@@ -283,6 +283,58 @@ export class CommandManager {
             }
         }));
 
+        // Command: Remove Matches with Selection
+        this.context.subscriptions.push(vscode.commands.registerCommand(Constants.Commands.RemoveMatchesWithSelection, async () => {
+            const editor = vscode.window.activeTextEditor;
+            if (!editor || editor.selection.isEmpty) {
+                vscode.window.showInformationMessage('Please select some text first.');
+                return;
+            }
+
+            const selectedText = editor.document.getText(editor.selection);
+            if (!selectedText) {
+                return;
+            }
+
+            const doc = editor.document;
+            const edits = new vscode.WorkspaceEdit();
+            const rangesToDelete: vscode.Range[] = [];
+            let matchCount = 0;
+
+            // Use String.includes for stateless, literal, case-sensitive matching
+            // This avoids issues with stateful RegEx (g flag) where lastIndex isn't reset between lines
+            for (let i = 0; i < doc.lineCount; i++) {
+                const line = doc.lineAt(i);
+                if (line.text.includes(selectedText)) {
+                    rangesToDelete.push(line.rangeIncludingLineBreak);
+                    matchCount++;
+                }
+            }
+
+            if (matchCount === 0) {
+                vscode.window.showInformationMessage(`No matches found for '${selectedText}'.`);
+                return;
+            }
+
+            // Confirm deletion if many lines
+            if (matchCount > 100) {
+                const response = await vscode.window.showWarningMessage(
+                    `Are you sure you want to remove ${matchCount} lines matching '${selectedText}'?`,
+                    'Yes', 'No'
+                );
+                if (response !== 'Yes') {
+                    return;
+                }
+            }
+
+            for (const range of rangesToDelete) {
+                edits.delete(doc.uri, range);
+            }
+
+            await vscode.workspace.applyEdit(edits);
+            vscode.window.showInformationMessage(`Removed ${matchCount} lines matching '${selectedText}'.`);
+        }));
+
         // Command: Toggle Group
         this.context.subscriptions.push(vscode.commands.registerCommand(Constants.Commands.ToggleGroup, (group: FilterGroup) => {
             if (group) {

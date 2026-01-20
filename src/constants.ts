@@ -157,6 +157,7 @@ export const Constants = {
         ExportGroup: 'logmagnifier.exportGroup',
         EditFilterItem: 'logmagnifier.editFilterItem',
         AddSelectionToFilter: 'logmagnifier.addSelectionToFilter',
+        RemoveMatchesWithSelection: 'logmagnifier.removeMatchesWithSelection',
         ExpandAllWordGroups: 'logmagnifier.expandAllWordGroups',
         CollapseAllWordGroups: 'logmagnifier.collapseAllWordGroups',
         ExpandAllRegexGroups: 'logmagnifier.expandAllRegexGroups',
