@@ -1,5 +1,11 @@
 # Change Log
 
+## [1.5.1]
+
+### Refactor
+- **Internal**: Improved code style and centralized constants.
+- **Performance**: Optimized highlighting logic, filter service, and reduced memory usage.
+
 ## [1.5.0]
 
 ### Added
