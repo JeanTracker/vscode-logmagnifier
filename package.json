@@ -458,6 +458,11 @@
         "command": "logmagnifier.applyJsonPretty",
         "key": "ctrl+cmd+j",
         "when": "editorTextFocus"
+      },
+      {
+        "command": "logmagnifier.toggleBookmark",
+        "key": "ctrl+cmd+b",
+        "when": "editorTextFocus"
       }
     ],
     "commands": [
@@ -987,6 +992,11 @@
       {
         "command": "logmagnifier.applyJsonPretty",
         "title": "Open JSON Preview",
+        "category": "LogMagnifier"
+      },
+      {
+        "command": "logmagnifier.toggleBookmark",
+        "title": "Toggle Line Bookmark",
         "category": "LogMagnifier"
       }
     ],
