@@ -19,6 +19,8 @@ import { SourceMapService } from './services/SourceMapService';
 import { FilteredLogDefinitionProvider } from './providers/FilteredLogDefinitionProvider';
 import { Constants } from './constants';
 
+let debounceTimer: NodeJS.Timeout | undefined;
+
 export function activate(context: vscode.ExtensionContext) {
 	const logger = Logger.getInstance();
 	logger.info('LogMagnifier activated');
@@ -229,7 +231,7 @@ export function activate(context: vscode.ExtensionContext) {
 		lastProcessedDoc = editor.document;
 	}
 
-	let debounceTimer: NodeJS.Timeout | undefined;
+
 
 	// Update counts when text changes
 	context.subscriptions.push(vscode.workspace.onDidChangeTextDocument(e => {
@@ -275,7 +277,12 @@ export function activate(context: vscode.ExtensionContext) {
 	}));
 }
 
-export function deactivate() { }
+export function deactivate() {
+	if (debounceTimer) {
+		clearTimeout(debounceTimer);
+		debounceTimer = undefined;
+	}
+}
 
 function isSupportedScheme(uri: vscode.Uri): boolean {
 	return uri.scheme === 'file' || uri.scheme === 'untitled';

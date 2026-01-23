@@ -87,6 +87,13 @@ export class HighlightService implements vscode.Disposable {
     }
 
     public refreshDecorationType() {
+        // Explicitly clear decorations from all visible editors first
+        vscode.window.visibleTextEditors.forEach(editor => {
+            this.decorationTypes.forEach(({ decoration }) => {
+                editor.setDecorations(decoration, []);
+            });
+        });
+
         this.dispose();
         // Clear cache explicitly after disposal to prevent memory leaks if dispose implementation changes
         this.decorationTypes.clear();

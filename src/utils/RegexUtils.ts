@@ -20,7 +20,11 @@ export class RegexUtils {
     public static create(keyword: string, isRegex: boolean, caseSensitive: boolean): RegExp {
         const key = `${keyword}_${isRegex}_${caseSensitive}`;
         if (RegexUtils.cache.has(key)) {
-            return RegexUtils.cache.get(key)!;
+            // LRU: Refresh by deleting and re-inserting
+            const regex = RegexUtils.cache.get(key)!;
+            RegexUtils.cache.delete(key);
+            RegexUtils.cache.set(key, regex);
+            return regex;
         }
 
         try {
@@ -33,9 +37,12 @@ export class RegexUtils {
                 regex = new RegExp(escaped, flags);
             }
 
-            // Simple LRU-like eviction (clearing half if full)
+            // LRU: Evict oldest if full
             if (RegexUtils.cache.size >= RegexUtils.MAX_CACHE_SIZE) {
-                RegexUtils.cache.clear();
+                const oldestKey = RegexUtils.cache.keys().next().value;
+                if (oldestKey) {
+                    RegexUtils.cache.delete(oldestKey);
+                }
             }
             RegexUtils.cache.set(key, regex);
             return regex;

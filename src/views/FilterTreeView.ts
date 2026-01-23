@@ -227,7 +227,7 @@ export class FilterTreeDataProvider implements vscode.TreeDataProvider<TreeItem>
         return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><circle cx="8" cy="8" r="4" fill="${fillColor}"/></svg>`;
     }
 
-    private isGroup(item: any): item is FilterGroup {
-        return item && typeof item === 'object' && Array.isArray((item as FilterGroup).filters);
+    private isGroup(item: TreeItem): item is FilterGroup {
+        return (item as FilterGroup).filters !== undefined;
     }
 }

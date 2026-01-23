@@ -74,23 +74,39 @@ export class FilterManager {
         }
     }
 
+    private ensureFilterMigration(filter: FilterItem): void {
+        if (filter.highlightMode === undefined) {
+            const legacy = filter as any;
+            filter.highlightMode = legacy.enableFullLineHighlight ? 1 : 0;
+            delete legacy.enableFullLineHighlight;
+        }
+    }
+
     private debouncedSaveToState() {
         if (this.saveDebounceTimer) {
             clearTimeout(this.saveDebounceTimer);
         }
-        this.saveDebounceTimer = setTimeout(() => {
-            this.saveToState();
-            this.saveDebounceTimer = undefined;
+        this.saveDebounceTimer = setTimeout(async () => {
+            try {
+                await this.saveToState();
+            } catch (e) {
+                this.logger.error(`Failed to save state: ${e}`);
+            } finally {
+                this.saveDebounceTimer = undefined;
+            }
         }, 300);
     }
 
     private async saveToState() {
+        // Create a snapshot of groups to avoid race conditions during async operations
+        const groupsSnapshot = this.deepCopy(this.groups);
+
         // 1. Save to current session state (FilterGroups) - this ensures reload restoration
-        await this.context.globalState.update(Constants.GlobalState.FilterGroups, this.groups);
+        await this.context.globalState.update(Constants.GlobalState.FilterGroups, groupsSnapshot);
 
         // 2. Auto-save to Active Profile (including Default)
         const activeProfileName = this.getActiveProfile();
-        await this.updateProfileData(activeProfileName, this.groups);
+        await this.updateProfileData(activeProfileName, groupsSnapshot);
     }
 
     private async updateProfileData(name: string, groups: FilterGroup[]) {
@@ -329,14 +345,10 @@ export class FilterManager {
         if (group) {
             const filter = group.filters.find(f => f.id === filterId);
             if (filter) {
-                // If it was the old boolean flag, migrate it
-                if (filter.highlightMode === undefined) {
-                    filter.highlightMode = (filter as any).enableFullLineHighlight ? 1 : 0;
-                    delete (filter as any).enableFullLineHighlight;
-                }
+                this.ensureFilterMigration(filter);
 
                 // Cycle: 0 (Word) -> 1 (Line) -> 2 (Whole Line) -> 0
-                filter.highlightMode = (filter.highlightMode + 1) % 3;
+                filter.highlightMode = ((filter.highlightMode ?? 0) + 1) % 3;
                 this.debouncedSaveToState();
                 this._onDidChangeFilters.fire();
             }
@@ -525,11 +537,7 @@ export class FilterManager {
         if (group) {
             const filter = group.filters.find(f => f.id === filterId);
             if (filter) {
-                // Ensure legacy migration if needed (though unlikely to catch here, good practice)
-                if (filter.highlightMode === undefined) {
-                    filter.highlightMode = (filter as any).enableFullLineHighlight ? 1 : 0;
-                    delete (filter as any).enableFullLineHighlight;
-                }
+                this.ensureFilterMigration(filter);
 
                 if (filter.highlightMode !== mode) {
                     filter.highlightMode = mode;
