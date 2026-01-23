@@ -290,8 +290,12 @@ export class LogBookmarkService implements vscode.Disposable {
             for (const key in bookmarksData) {
                 const bookmarks = bookmarksData[key].map(b => {
                     try {
-                        if (!b || typeof b !== 'object') { return null; }
-                        if (!b.id || !b.uri) { return null; }
+                        if (!b || typeof b !== 'object') {
+                            return null;
+                        }
+                        if (!b.id || !b.uri) {
+                            return null;
+                        }
 
                         return {
                             id: b.id,

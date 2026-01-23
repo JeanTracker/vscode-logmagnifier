@@ -37,7 +37,9 @@ export class ColorService {
                 // This matches the hardcoded list I previously added, but properly formatted
                 const defaults = this.getDefaultPresets();
                 const def = defaults.find(p => p.id === id);
-                if (def) presets.push(def);
+                if (def) {
+                    presets.push(def);
+                }
             }
         }
         this.colorPresets = presets;

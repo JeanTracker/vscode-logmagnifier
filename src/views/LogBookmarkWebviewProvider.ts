@@ -134,7 +134,9 @@ export class LogBookmarkWebviewProvider implements vscode.WebviewViewProvider {
 
             let fileLines = '';
             for (const item of items) {
-                if (!item || !item.id) { continue; }
+                if (!item || !item.id) {
+                    continue;
+                }
                 const paddedLine = ((item.line || 0) + 1).toString();
                 const content = item.content || '';
                 let safeContent = content.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");

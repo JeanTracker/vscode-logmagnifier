@@ -172,9 +172,6 @@ export class FilterTreeDataProvider implements vscode.TreeDataProvider<TreeItem>
         }
 
         if (!targetItem) {
-            // Dropped on root? Items shouldn't really be dropped on root unless we want to move them to a default group?
-            // For now, ignore drops on root for items if not supported.
-            // Or maybe we treat it as "move to end of current group"? But "current group" is ambiguous.
             return;
         }
 

@@ -28,7 +28,9 @@ export class AdbCommandManager {
                 device = arg as AdbDevice; // Fallback or direct device call
             }
 
-            if (!device) { return; }
+            if (!device) {
+                return;
+            }
             const existingSessions = this.adbService.getSessions();
             const defaultName = `Session ${existingSessions.length + 1}`;
 
@@ -77,7 +79,9 @@ export class AdbCommandManager {
         }));
 
         this.context.subscriptions.push(vscode.commands.registerCommand(Constants.Commands.AddLogcatTag, async (session: LogcatSession) => {
-            if (!session) { return; }
+            if (!session) {
+                return;
+            }
 
             // Input format: Tag:Priority or just Tag
             const input = await vscode.window.showInputBox({
@@ -101,7 +105,9 @@ export class AdbCommandManager {
             // However, we need the sessionId to update it.
             // We can find the session by tag.
             const session = this.adbService.getSessions().find(s => s.tags.find(t => t.id === tag.id));
-            if (!session) { return; }
+            if (!session) {
+                return;
+            }
 
             const current = `${tag.name}:${tag.priority}`;
             const input = await vscode.window.showInputBox({
@@ -122,14 +128,18 @@ export class AdbCommandManager {
 
         this.context.subscriptions.push(vscode.commands.registerCommand(Constants.Commands.RemoveLogcatTag, async (tag: LogcatTag) => {
             const session = this.adbService.getSessions().find(s => s.tags.find(t => t.id === tag.id));
-            if (!session) { return; }
+            if (!session) {
+                return;
+            }
             this.adbService.removeTag(session.id, tag.id);
         }));
 
         this.context.subscriptions.push(vscode.commands.registerCommand(Constants.Commands.PickTargetApp, async (item: any) => {
             // item is TargetAppItem
             const device = item.device;
-            if (!device) { return; }
+            if (!device) {
+                return;
+            }
 
             const runningApps = await this.adbService.getRunningApps(device.id);
             const thirdPartyPackages = await this.adbService.getThirdPartyPackages(device.id);
@@ -197,7 +207,9 @@ export class AdbCommandManager {
                     Constants.Messages.Warn.UninstallConfirm.replace('{0}', item.device.targetApp),
                     'Yes', 'No'
                 );
-                if (answer !== 'Yes') { return; }
+                if (answer !== 'Yes') {
+                    return;
+                }
 
                 const success = await this.adbService.uninstallApp(item.device.id, item.device.targetApp);
                 if (success) {
@@ -215,7 +227,9 @@ export class AdbCommandManager {
                     Constants.Messages.Warn.ClearStorageConfirm.replace('{0}', item.device.targetApp),
                     'Yes', 'No'
                 );
-                if (answer !== 'Yes') { return; }
+                if (answer !== 'Yes') {
+                    return;
+                }
 
                 const success = await this.adbService.clearAppStorage(item.device.id, item.device.targetApp);
                 if (success) {
@@ -371,7 +385,9 @@ export class AdbCommandManager {
     private parseTagInput(input: string): LogcatTag | undefined {
         const parts = input.split(':');
         const name = parts[0].trim();
-        if (!name) { return undefined; }
+        if (!name) {
+            return undefined;
+        }
 
         let priority = LogPriority.Verbose; // Default
         if (parts.length > 1) {

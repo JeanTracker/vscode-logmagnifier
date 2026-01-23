@@ -91,7 +91,9 @@ export class LogBookmarkCommandManager {
     }
 
     private async addMatchListToBookmark(filter: FilterItem) {
-        if (!filter) { return; }
+        if (!filter) {
+            return;
+        }
 
         const editor = vscode.window.activeTextEditor;
         if (!editor) {
@@ -100,7 +102,9 @@ export class LogBookmarkCommandManager {
         }
 
         const keyword = filter.keyword;
-        if (!keyword) { return; }
+        if (!keyword) {
+            return;
+        }
 
         // Use RegexUtils to create regex for searching
         const regex = RegexUtils.create(keyword, !!filter.isRegex, !!filter.caseSensitive);
@@ -136,7 +140,9 @@ export class LogBookmarkCommandManager {
     }
 
     private async jumpToBookmark(item: BookmarkItem) {
-        if (!item) { return; }
+        if (!item) {
+            return;
+        }
         try {
             const doc = await vscode.workspace.openTextDocument(item.uri);
             const editor = await vscode.window.showTextDocument(doc, { preview: true });
@@ -156,7 +162,9 @@ export class LogBookmarkCommandManager {
     }
 
     private async copyBookmarkFile(uri: vscode.Uri, withLineNumber: boolean = true) {
-        if (!uri) { return; }
+        if (!uri) {
+            return;
+        }
         const bookmarksMap = this.bookmarkService.getBookmarks();
         const bookmarks = bookmarksMap.get(uri.toString());
 
@@ -168,7 +176,9 @@ export class LogBookmarkCommandManager {
     }
 
     private async openBookmarkFile(uri: vscode.Uri, withLineNumber: boolean = true) {
-        if (!uri) { return; }
+        if (!uri) {
+            return;
+        }
         const bookmarksMap = this.bookmarkService.getBookmarks();
         const bookmarks = bookmarksMap.get(uri.toString());
 

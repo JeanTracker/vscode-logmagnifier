@@ -192,7 +192,9 @@ export function activate(context: vscode.ExtensionContext) {
 			const scheme = vscode.window.activeTextEditor.document.uri.scheme;
 			if (isSupportedScheme(vscode.window.activeTextEditor.document.uri)) {
 				const counts = await highlightService.updateHighlights(vscode.window.activeTextEditor);
-				if (counts) resultCountService.updateCounts(counts);
+				if (counts) {
+					resultCountService.updateCounts(counts);
+				}
 				lastProcessedDoc = vscode.window.activeTextEditor.document;
 			}
 		}
@@ -208,7 +210,9 @@ export function activate(context: vscode.ExtensionContext) {
 				const scheme = vscode.window.activeTextEditor.document.uri.scheme;
 				if (isSupportedScheme(vscode.window.activeTextEditor.document.uri)) {
 					const counts = await highlightService.updateHighlights(vscode.window.activeTextEditor);
-					if (counts) resultCountService.updateCounts(counts);
+					if (counts) {
+						resultCountService.updateCounts(counts);
+					}
 					lastProcessedDoc = vscode.window.activeTextEditor.document;
 				}
 			}
@@ -232,7 +236,9 @@ export function activate(context: vscode.ExtensionContext) {
 		// Initial highlight (async)
 		(async () => {
 			const counts = await highlightService.updateHighlights(editor);
-			if (counts) resultCountService.updateCounts(counts);
+			if (counts) {
+				resultCountService.updateCounts(counts);
+			}
 		})();
 		lastProcessedDoc = editor.document;
 	}
@@ -256,7 +262,9 @@ export function activate(context: vscode.ExtensionContext) {
 			debounceTimer = setTimeout(async () => {
 				if (vscode.window.activeTextEditor && e.document === vscode.window.activeTextEditor.document) {
 					const counts = await highlightService.updateHighlights(vscode.window.activeTextEditor);
-					if (counts) resultCountService.updateCounts(counts);
+					if (counts) {
+						resultCountService.updateCounts(counts);
+					}
 					lastProcessedDoc = vscode.window.activeTextEditor.document;
 				}
 			}, 500);

@@ -273,7 +273,9 @@ export class AdbService {
 
     public async startSession(sessionId: string) {
         const session = this.sessions.get(sessionId);
-        if (!session || session.isRunning) { return; }
+        if (!session || session.isRunning) {
+            return;
+        }
 
         if (session.outputDocumentUri) {
             const uri = vscode.Uri.parse(session.outputDocumentUri);

@@ -25,8 +25,12 @@ export class ProfileManager {
             names.unshift(Constants.Labels.DefaultProfile);
         }
         return names.sort((a, b) => {
-            if (a === Constants.Labels.DefaultProfile) { return -1; }
-            if (b === Constants.Labels.DefaultProfile) { return 1; }
+            if (a === Constants.Labels.DefaultProfile) {
+                return -1;
+            }
+            if (b === Constants.Labels.DefaultProfile) {
+                return 1;
+            }
             return a.localeCompare(b);
         });
     }
@@ -52,8 +56,11 @@ export class ProfileManager {
                     // "wordCount: p.groups.filter(g => !g.isRegex).length"
                     // Yes, it counted groups.
 
-                    if (g.isRegex) regexCount++;
-                    else wordCount++;
+                    if (g.isRegex) {
+                        regexCount++;
+                    } else {
+                        wordCount++;
+                    }
                 });
             }
             return { name: p.name, wordCount, regexCount };
@@ -65,8 +72,12 @@ export class ProfileManager {
         }
 
         return metadata.sort((a, b) => {
-            if (a.name === Constants.Labels.DefaultProfile) { return -1; }
-            if (b.name === Constants.Labels.DefaultProfile) { return 1; }
+            if (a.name === Constants.Labels.DefaultProfile) {
+                return -1;
+            }
+            if (b.name === Constants.Labels.DefaultProfile) {
+                return 1;
+            }
             return a.name.localeCompare(b.name);
         });
     }
@@ -88,7 +99,9 @@ export class ProfileManager {
     }
 
     public async deleteProfile(name: string): Promise<boolean> {
-        if (name === Constants.Labels.DefaultProfile) { return false; }
+        if (name === Constants.Labels.DefaultProfile) {
+            return false;
+        }
 
         let profiles = this.context.globalState.get<FilterProfile[]>(Constants.GlobalState.FilterProfiles) || [];
         const initialLen = profiles.length;

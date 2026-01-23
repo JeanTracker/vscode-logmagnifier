@@ -208,7 +208,9 @@ export class HighlightService implements vscode.Disposable {
         matchCounts: Map<string, number>,
         offset: number
     ) {
-        if (!filter.keyword) { return; }
+        if (!filter.keyword) {
+            return;
+        }
 
         const isExclude = filter.type === 'exclude';
         const decoRequests: { color: any, isFullLine: boolean, textDecoration?: string, fontWeight?: string, useLineRange: boolean, textColor?: string }[] = [];
@@ -324,14 +326,18 @@ export class HighlightService implements vscode.Disposable {
     private applyDecorations(editor: vscode.TextEditor, rangesByDeco: Map<string, vscode.Range[]>) {
         rangesByDeco.forEach((ranges, key) => {
             const decoInfo = this.decorationTypes.get(key);
-            if (!decoInfo) { return; }
+            if (!decoInfo) {
+                return;
+            }
 
             // Deduplicate ranges to improve rendering performance
             let uniqueRanges: vscode.Range[] = [];
             if (decoInfo.config.isFullLine) {
                 const lines = new Set<number>();
                 uniqueRanges = ranges.filter(r => {
-                    if (lines.has(r.start.line)) { return false; }
+                    if (lines.has(r.start.line)) {
+                        return false;
+                    }
                     lines.add(r.start.line);
                     return true;
                 });
@@ -339,7 +345,9 @@ export class HighlightService implements vscode.Disposable {
                 const seen = new Set<string>();
                 uniqueRanges = ranges.filter(r => {
                     const rkey = `${r.start.line}:${r.start.character}-${r.end.line}:${r.end.character}`;
-                    if (seen.has(rkey)) { return false; }
+                    if (seen.has(rkey)) {
+                        return false;
+                    }
                     seen.add(rkey);
                     return true;
                 });
@@ -355,8 +363,12 @@ export class HighlightService implements vscode.Disposable {
         // Check all filters to find a match
         for (const group of activeGroups) {
             for (const filter of group.filters) {
-                if (!filter.isEnabled || !filter.keyword) { continue; }
-                if (filter.isRegex && !enableRegexHighlight) { continue; }
+                if (!filter.isEnabled || !filter.keyword) {
+                    continue;
+                }
+                if (filter.isRegex && !enableRegexHighlight) {
+                    continue;
+                }
 
                 try {
                     const regex = RegexUtils.create(filter.keyword, !!filter.isRegex, !!filter.caseSensitive);
@@ -371,12 +383,16 @@ export class HighlightService implements vscode.Disposable {
     }
 
     public flashLine(editor: vscode.TextEditor, line: number, forceColor?: string | { light: string, dark: string }) {
-        if (!editor || line < 0) { return; }
+        if (!editor || line < 0) {
+            return;
+        }
 
         const config = vscode.workspace.getConfiguration(Constants.Configuration.Section);
         const enableAnimation = config.get<boolean>(Constants.Configuration.Editor.NavigationAnimation) || false;
 
-        if (!enableAnimation) { return; }
+        if (!enableAnimation) {
+            return;
+        }
 
         // Cancel previous animation if active
         if (this.activeFlashTimeout) {

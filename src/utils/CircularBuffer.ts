@@ -8,7 +8,9 @@ export class CircularBuffer<T> {
     }
 
     push(item: T): void {
-        if (this.capacity === 0) { return; }
+        if (this.capacity === 0) {
+            return;
+        }
         if (this.size < this.capacity) {
             this.buffer[this.size++] = item;
         } else {
@@ -18,7 +20,9 @@ export class CircularBuffer<T> {
     }
 
     getAll(): T[] {
-        if (this.size === 0) { return []; }
+        if (this.size === 0) {
+            return [];
+        }
         if (this.size < this.capacity) {
             return this.buffer.slice(0, this.size);
         }
