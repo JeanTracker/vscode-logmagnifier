@@ -75,7 +75,10 @@ export function activate(context: vscode.ExtensionContext) {
 	// Register Definition Provider for Click-to-Navigate
 	context.subscriptions.push(
 		vscode.languages.registerDefinitionProvider(
-			{ scheme: '*', language: '*' }, // Try to catch everything
+			[
+				{ scheme: 'file', language: 'log' },
+				{ scheme: 'untitled', language: 'log' }
+			],
 			new FilteredLogDefinitionProvider(sourceMapService)
 		)
 	);

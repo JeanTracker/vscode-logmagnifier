@@ -82,6 +82,15 @@ export class SourceMapService {
     private pendingNavigation: { uri: vscode.Uri, line: number, timestamp: number } | undefined;
 
     public setPendingNavigation(uri: vscode.Uri, line: number): void {
+        // Optimization: Avoid object churn if the target hasn't changed.
+        // We update the timestamp to keep the navigation window open without allocating a new object.
+        if (this.pendingNavigation &&
+            this.pendingNavigation.line === line &&
+            this.pendingNavigation.uri.toString() === uri.toString()) {
+            this.pendingNavigation.timestamp = Date.now();
+            return;
+        }
+
         this.pendingNavigation = {
             uri,
             line,
