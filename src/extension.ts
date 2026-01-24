@@ -113,6 +113,9 @@ export function activate(context: vscode.ExtensionContext) {
 
 	new LogBookmarkCommandManager(context, bookmarkService, highlightService);
 
+	// Initialize mouse over context
+	vscode.commands.executeCommand('setContext', Constants.ContextKeys.BookmarkMouseOver, false);
+
 	logger.info(`Registering QuickAccessProvider with view ID: ${Constants.Views.QuickAccess}`);
 	context.subscriptions.push(
 		vscode.window.registerTreeDataProvider(Constants.Views.QuickAccess, quickAccessProvider)
