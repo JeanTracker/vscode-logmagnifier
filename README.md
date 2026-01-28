@@ -13,7 +13,7 @@ A powerful log analysis tool for Visual Studio Code, featuring advanced log filt
 - **Highlighting**: Automatically highlights include type keywords in the filtered view.
 - **3-Stage Highlighting**: Toggle between Word, Line, and Full Line highlight modes.
 - **Navigation Animation**: Visual flash effect when navigating to search matches (configurable).
-- **Expanded Colors**: 16 distinct, high-visibility colors with standardized configuration.
+- **Expanded Colors**: 17 distinct, high-visibility colors including a "Bold Only" (Color00) option.
 - **Context Lines**: View matching lines with surrounding context (±3, ±5, ±9 lines).
 - **Focus Mode**: Generates a new editor tab with filtered results, enabling multi-stage filtering.
 - **Regex Support**: Advanced filtering using regular expressions.
@@ -31,7 +31,10 @@ A powerful log analysis tool for Visual Studio Code, featuring advanced log filt
   - **Session Management**: Create multiple logcat sessions with custom tag filters, priorities, and historical time toggles.
 - **Log Bookmarks**: Bookmark important lines in your log files for easy reference and navigation.
   - **Add/Remove**: Toggle bookmarks via context menu.
+  - **Keyword Tags**: Add custom tags to bookmarks for better organization.
   - **Navigate**: Jump to bookmarks instantly from the "LogMagnifier" view in the Panel.
+  - **Word Wrap**: Toggle word wrap specifically for the bookmark view.
+  - **Clear All**: Quickly remove all bookmarks for the current file.
   - **Persistence**: Bookmarks are saved and restored across sessions.
 - **Interactive JSON Preview**: Extract and explore JSON objects from log lines in a dedicated, searchable tree view (Ctrl+Cmd+J).
 
@@ -87,7 +90,12 @@ A powerful log analysis tool for Visual Studio Code, featuring advanced log filt
     - Open the "LogMagnifier" view in the panel (bottom panel).
     - Click any bookmark to jump to that line in the editor.
     - Click the 'x' icon to remove a bookmark.
-3.  **Persistence**:
+3.  **Manage Bookmarks**:
+    - **Add Tags**: Right-click a bookmark to add a custom keywoard tag (e.g., `#error`, `#login`) which is displayed next to the line number.
+    - **Toggle Word Wrap**: Use the "Word Wrap" icon in the view title or `Alt+Z` (when view is focused) to toggle wrapping for long log lines.
+    - **Clear All**: Use the "Clear All" icon to remove all bookmarks for the current file.
+    - **Remove**: Click the 'x' icon to remove a single bookmark.
+4.  **Persistence**:
     - Bookmarks are automatically saved for each file and restored when you reopen the workspace.
 
 ## Requirements
@@ -101,6 +109,7 @@ This extension contributes the following settings:
 * `logmagnifier.regex.enableHighlight`: Enable highlighting for Regex filters in the editor. (Default: `false`)
 * `logmagnifier.editor.navigationAnimation`: Enable visual flash animation when navigating to search matches. (Default: `true`)
 * `logmagnifier.regex.highlightColor`: Background color for Regex highlight. Can be a color string, a preset name, or an object with `light`/`dark` values.
+* `logmagnifier.highlightColors.color00`: Special "Bold Only" style (no background color).
 * `logmagnifier.highlightColors.color01` ... `color16`: Customizable light/dark mode colors for each highlight preset.
 * `logmagnifier.tempFilePrefix`: Prefix for the filtered temp files. (Default: `filtered_`)
 * `logmagnifier.statusBarTimeout`: Duration for status bar messages in milliseconds. (Default: 5000)
