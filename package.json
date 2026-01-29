@@ -829,7 +829,7 @@
       },
       {
         "command": "logmagnifier.addSelectionToFilter",
-        "title": "Add Selection to LogMagnifier Filter",
+        "title": "Add Selection to Word Filter",
         "icon": "$(plus)"
       },
       {
@@ -914,7 +914,7 @@
       },
       {
         "command": "logmagnifier.addBookmark",
-        "title": "Add Line to LogMagnifier Bookmark"
+        "title": "Add Line to Bookmark"
       },
       {
         "command": "logmagnifier.addMatchListToBookmark",
@@ -981,7 +981,7 @@
       },
       {
         "command": "logmagnifier.addSelectionMatchesToBookmark",
-        "title": "Add Matches to LogMagnifier Bookmark",
+        "title": "Add Matches to Bookmark",
         "icon": "$(bookmark)"
       },
       {
@@ -1044,9 +1044,40 @@
       {
         "id": "logmagnifier.copyEnabledSubmenu",
         "label": "Copy Enabled Items"
+      },
+      {
+        "id": "logmagnifier.editorContextSubmenu",
+        "label": "LogMagnifier"
       }
     ],
     "menus": {
+      "logmagnifier.editorContextSubmenu": [
+        {
+          "command": "logmagnifier.jumpToSource",
+          "group": "1_navigation",
+          "when": "editorTextFocus && logmagnifier.isFilteredLog"
+        },
+        {
+          "command": "logmagnifier.addSelectionToFilter",
+          "group": "2_filter",
+          "when": "editorHasSelection"
+        },
+        {
+          "command": "logmagnifier.removeMatchesWithSelection",
+          "group": "3_remove",
+          "when": "editorHasSelection"
+        },
+        {
+          "command": "logmagnifier.addBookmark",
+          "group": "4_bookmark@1",
+          "when": "resourceScheme != output && resourceScheme != debug"
+        },
+        {
+          "command": "logmagnifier.addSelectionMatchesToBookmark",
+          "group": "4_bookmark@2",
+          "when": "editorHasSelection && resourceScheme != output && resourceScheme != debug"
+        }
+      ],
       "logmagnifier.filterTypeSubmenu": [
         {
           "command": "logmagnifier.setFilterType.include",
@@ -1215,24 +1246,8 @@
       ],
       "editor/context": [
         {
-          "command": "logmagnifier.addSelectionToFilter",
-          "when": "editorHasSelection",
-          "group": "logmagnifier@3"
-        },
-        {
-          "command": "logmagnifier.addBookmark",
-          "when": "resourceScheme != output && resourceScheme != debug",
-          "group": "logmagnifier@1"
-        },
-        {
-          "command": "logmagnifier.addSelectionMatchesToBookmark",
-          "when": "editorHasSelection && resourceScheme != output && resourceScheme != debug",
-          "group": "logmagnifier@2"
-        },
-        {
-          "command": "logmagnifier.removeMatchesWithSelection",
-          "when": "editorHasSelection",
-          "group": "logmagnifier@5"
+          "submenu": "logmagnifier.editorContextSubmenu",
+          "group": "logmagnifier"
         }
       ],
       "view/item/context": [
