@@ -303,8 +303,13 @@ export class LogBookmarkService implements vscode.Disposable {
                 }
             }
 
-            this._history.set(uriKey, newHistory);
-            this._historyIndices.set(uriKey, newHistory.length > 0 ? Math.min(historyIndex, newHistory.length - 1) : -1);
+            if (newHistory.length === 0 || (newHistory.length === 1 && newHistory[0].length === 0)) {
+                this._history.delete(uriKey);
+                this._historyIndices.delete(uriKey);
+            } else {
+                this._history.set(uriKey, newHistory);
+                this._historyIndices.set(uriKey, newHistory.length > 0 ? Math.min(historyIndex, newHistory.length - 1) : -1);
+            }
         }
 
         this._onDidChangeBookmarks.fire();
