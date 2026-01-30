@@ -145,21 +145,21 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 		}
 
-		quickAccessProvider.refresh();
 		if (editor) {
-			const scheme = editor.document.uri.scheme;
 			if (!isSupportedScheme(editor.document.uri)) {
 				return;
 			}
-			const fileName = editor.document.fileName;
 
-			// Optimization: Prevent redundant processing if switching back to the same document
 			if (lastProcessedDoc && editor.document === lastProcessedDoc) {
 				return;
 			}
 
 			const largeFileOptimizations = vscode.workspace.getConfiguration(Constants.Configuration.Editor.Section).get<boolean>(Constants.Configuration.Editor.LargeFileOptimizations);
+			const fileName = editor.document.fileName;
+			const scheme = editor.document.uri.scheme;
 			logger.info(`Active editor changed to: ${fileName} (Scheme: ${scheme}, LargeFileOptimizations: ${largeFileOptimizations})`);
+
+			quickAccessProvider.refresh();
 
 			const counts = await highlightService.updateHighlights(editor);
 			if (counts) {
@@ -167,32 +167,27 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 			lastProcessedDoc = editor.document;
 		} else {
-			lastProcessedDoc = undefined; // Invalidate since we are not tracking a standard editor
-			resultCountService.clearCounts(); // Ensure counts are cleared when no standard editor is active
-
 			// Fallback for large files where activeTextEditor is undefined
+			// We only want to handle the specific case where a file is too large for VS Code to provide an editor.
+			// Other cases (e.g. focus lost to Output panel, transition states) should be ignored to prevent redundant refreshes/logs.
 			const activeTab = vscode.window.tabGroups.activeTabGroup.activeTab;
 			if (activeTab && activeTab.input instanceof vscode.TabInputText) {
 				const uri = activeTab.input.uri;
-
-				// Standard VS Code limit for extensions is 50MB
 				try {
 					if (uri.scheme === Constants.Schemes.File) {
 						const stats = fs.statSync(uri.fsPath);
 						const sizeMB = stats.size / (1024 * 1024);
 						if (sizeMB > 50) {
+							lastProcessedDoc = undefined;
+							resultCountService.clearCounts();
+							quickAccessProvider.refresh();
 							logger.info(`Active editor changed to (Tab): ${uri.fsPath} (${sizeMB.toFixed(2)}MB). - Too large for extension host (Limit 50MB).`);
 							vscode.window.setStatusBarMessage(`LogMagnifier: File too large (${sizeMB.toFixed(1)}MB). VS Code limits extension support to 50MB.`, 5000);
-							return;
 						}
 					}
 				} catch (e) {
 					logger.error(`Error checking file size: ${e}`);
 				}
-
-				logger.info(`Active editor changed to (Tab): ${uri.fsPath} (Scheme: ${uri.scheme}) - activeTextEditor undefined.`);
-			} else {
-				logger.info('Active editor changed to: (None)');
 			}
 		}
 	}));
@@ -305,6 +300,8 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.workspace.onDidCloseTextDocument(doc => {
 		if (lastProcessedDoc === doc) {
 			lastProcessedDoc = undefined;
+			resultCountService.clearCounts();
+			quickAccessProvider.refresh();
 		}
 	}));
 }
