@@ -1,5 +1,30 @@
 # Change Log
 
+## [1.5.4]
+
+### Changed
+- **Bookmark UX**: Improved bookmark navigation with quick-nav and auto-scroll behavior. Removed redundant history buttons.
+- **Bookmark Labels**: Manual bookmarks now use line numbers as default labels.
+- **JSON Preview**: Added depth control and selection size limits (default 10 lines) to prevent freezing.
+- **Context Menu**: Reorganized LogMagnifier context menu for better usability.
+- **Filter Tree**: Enhanced icons to better distinguish enabled vs disabled states.
+
+### Fixed
+- **Bookmark Stability**: Resolved memory leaks and fixed incorrect history state handling.
+- **Webview**: Fixed horizontal scrolling issues in bookmark webview.
+- **Large Files**: Updated error messages for clearer feedback.
+
+## [1.5.3]
+
+### Added
+- **Highlight Colors**: Added `color00` ("Bold Only") option for subtle highlighting.
+- **Bookmark Tags**: Added support for keyword tags on bookmarks.
+- **Clear All**: Added "Clear All" action to remove all bookmarks for the current file.
+
+### Changed
+- **Bookmark UI**: Moved action icons to the top toolbar for better access.
+- **Word Wrap**: Improved smart word wrap to target specific views based on mouse position.
+
 ## [1.5.2]
 
 ### Changed
