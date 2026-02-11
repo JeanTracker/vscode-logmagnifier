@@ -404,7 +404,7 @@ export class WorkflowManager implements vscode.Disposable {
         }
     }
 
-    public async run(workflowId: string, document: vscode.TextDocument): Promise<void> {
+    public async run(workflowId: string, source: vscode.TextDocument | vscode.Uri): Promise<void> {
         const sim = this.getWorkflow(workflowId);
         if (!sim) {
             throw new Error(`Workflow not found: ${workflowId}`);
@@ -417,24 +417,42 @@ export class WorkflowManager implements vscode.Disposable {
             return;
         }
 
-        let currentFilePath = document.uri.fsPath;
+        let currentFilePath: string;
+        let lineCount = 0;
+        let isDirty = false;
+        let isUntitled = false;
+        let documentContent = '';
+
+        if (source instanceof vscode.Uri) {
+            currentFilePath = source.fsPath;
+            // If we only have a Uri, we assume it's a file on disk (not dirty/untitled in the editor sense) unless checked otherwise.
+            // For large files, we won't have a document, so we can't check isDirty easily.
+            // We assume 'file' scheme Uris are effectively saved files.
+        } else {
+            // source is vscode.TextDocument
+            currentFilePath = source.uri.fsPath;
+            lineCount = source.lineCount;
+            isDirty = source.isDirty;
+            isUntitled = source.isUntitled;
+            documentContent = source.getText();
+        }
 
         // Create a temp file ONLY if the document is dirty or untitled
-        if (document.isDirty || document.isUntitled) {
+        if (isDirty || isUntitled) {
             const tmpDir = os.tmpdir();
             const scanPrefix = Constants.Defaults.TempFilePrefix.replace(/[^a-zA-Z0-9]/g, '');
             const randomSuffix = Math.random().toString(36).substring(7);
             const tempInputPath = path.join(tmpDir, `${scanPrefix}_source_${randomSuffix}.log`);
 
             try {
-                fs.writeFileSync(tempInputPath, document.getText(), 'utf8');
+                fs.writeFileSync(tempInputPath, documentContent, 'utf8');
                 currentFilePath = tempInputPath;
                 this.sessionFiles.add(currentFilePath);
                 this.logger.info(`Created temp source file for simulation (dirty/untitled): ${currentFilePath}`);
             } catch (e) {
                 this.logger.error(`Failed to create temp file for document: ${e}`);
                 this.logger.error(`[WorkflowManager] Error creating temp file: ${e}`);
-                if (document.isUntitled) {
+                if (isUntitled) {
                     throw new Error("Failed to process untitled file");
                 }
             }
@@ -506,7 +524,7 @@ export class WorkflowManager implements vscode.Disposable {
                     // Run LogProcessor
                     const result = await this.logProcessor.processFile(currentFilePath, effectiveGroups, {
                         prependLineNumbers: false,
-                        totalLineCount: document.lineCount
+                        totalLineCount: lineCount // pass 0 or real count
                     });
 
                     // Track file
@@ -571,9 +589,28 @@ export class WorkflowManager implements vscode.Disposable {
         );
         this.highlightService.registerDocumentFilters(uri, flatFilters);
 
-        const doc = await vscode.workspace.openTextDocument(uri);
-        await vscode.window.showTextDocument(doc, { preview: false });
-        vscode.languages.setTextDocumentLanguage(doc, 'log');
+        try {
+            // Check file size before opening
+            const stats = await vscode.workspace.fs.stat(uri);
+            const fileSizeMB = stats.size / (1024 * 1024);
+            if (fileSizeMB > 50) {
+                const open = 'Open Anyway';
+                const choice = await vscode.window.showWarningMessage(
+                    `Result file is large (${fileSizeMB.toFixed(2)}MB). VS Code may not display it correctly.`,
+                    open
+                );
+                if (choice !== open) {
+                    return;
+                }
+            }
+
+            const doc = await vscode.workspace.openTextDocument(uri);
+            await vscode.window.showTextDocument(doc, { preview: false });
+            vscode.languages.setTextDocumentLanguage(doc, 'log');
+        } catch (e) {
+            this.logger.error(`Failed to open result file: ${step.outputFilePath}. Error: ${e}`);
+            vscode.window.showErrorMessage(`Failed to open result file: ${step.outputFilePath}. It might be too large.`);
+        }
     }
 
     public async activateStep(workflowId: string, stepId: string) {

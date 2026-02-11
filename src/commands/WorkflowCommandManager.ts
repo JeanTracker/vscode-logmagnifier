@@ -59,7 +59,18 @@ export class WorkflowCommandManager {
                         vscode.window.showErrorMessage("Workflow can only run on file or untitled documents.");
                     }
                 } else {
-                    vscode.window.showErrorMessage("No active file found to run workflow on. Please open a log file.");
+                    // Try to get URI from active tab even if document open failed (e.g. large file)
+                    const activeTab = vscode.window.tabGroups.activeTabGroup.activeTab;
+                    if (activeTab && activeTab.input instanceof vscode.TabInputText) {
+                        const uri = activeTab.input.uri;
+                        if (uri.scheme === 'file') {
+                            await this.workflowManager.run(activeId, uri);
+                        } else {
+                            vscode.window.showErrorMessage("Workflow can only run on file or untitled documents.");
+                        }
+                    } else {
+                        vscode.window.showErrorMessage("No active file found to run workflow on. Please open a log file.");
+                    }
                 }
             } else {
                 vscode.window.showInformationMessage("No active workflow selected.");
@@ -102,7 +113,20 @@ export class WorkflowCommandManager {
                         vscode.window.showErrorMessage("Workflow can only run on file or untitled documents.");
                     }
                 } else {
-                    vscode.window.showErrorMessage("No active file found to run workflow on.");
+                    // Try to get URI from active tab even if document open failed (e.g. large file)
+                    const activeTab = vscode.window.tabGroups.activeTabGroup.activeTab;
+                    if (activeTab && activeTab.input instanceof vscode.TabInputText) {
+                        const uri = activeTab.input.uri;
+                        if (uri.scheme === 'file') {
+                            // Set active for visibility
+                            await this.workflowManager.setActiveWorkflow(simId);
+                            await this.workflowManager.run(simId, uri);
+                        } else {
+                            vscode.window.showErrorMessage("Workflow can only run on file or untitled documents.");
+                        }
+                    } else {
+                        vscode.window.showErrorMessage("No active file found to run workflow on.");
+                    }
                 }
             }
         }));
