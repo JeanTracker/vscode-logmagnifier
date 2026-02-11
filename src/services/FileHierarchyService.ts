@@ -106,28 +106,58 @@ export class FileHierarchyService {
         this._onDidChangeHierarchy.fire();
     }
 
-    public unregister(uri: vscode.Uri) {
+    public unregister(uri: vscode.Uri, recursive: boolean = false) {
+        if (recursive) {
+            this.removeGroup(uri);
+        } else {
+            const key = uri.toString();
+            const node = this.nodes.get(key);
+
+            if (node) {
+                // Remove from parent's children
+                if (node.parentId) {
+                    const parent = this.nodes.get(node.parentId);
+                    if (parent) {
+                        parent.children.delete(key);
+                    }
+                }
+                // Remove node itself
+                this.nodes.delete(key);
+
+                this.save();
+                this._onDidChangeHierarchy.fire();
+            }
+        }
+    }
+
+    private removeGroup(uri: vscode.Uri) {
         const key = uri.toString();
         const node = this.nodes.get(key);
+        if (!node) { return; }
 
-        if (node) {
-            // Remove from parent's children
-            if (node.parentId) {
-                const parent = this.nodes.get(node.parentId);
-                if (parent) {
-                    parent.children.delete(key);
-                }
+        // Recursively remove children first
+        // Create a copy of children set to avoid modification during iteration issues (though map delete is safe)
+        const children = Array.from(node.children);
+        for (const childKey of children) {
+            const childNode = this.nodes.get(childKey);
+            if (childNode) {
+                this.removeGroup(childNode.uri);
             }
-            // Remove node itself
-            this.nodes.delete(key);
-
-            // Recursively remove children ??
-            // Policy: If a parent is closed/removed, do we remove children?
-            // For now, let's keep it simple. Only remove if explicitly asked.
-
-            this.save();
-            this._onDidChangeHierarchy.fire();
         }
+
+        // Remove from parent's children
+        if (node.parentId) {
+            const parent = this.nodes.get(node.parentId);
+            if (parent) {
+                parent.children.delete(key);
+            }
+        }
+
+        // Remove node itself
+        this.nodes.delete(key);
+
+        this.save();
+        this._onDidChangeHierarchy.fire();
     }
 
     public getParent(uri: vscode.Uri): vscode.Uri | undefined {

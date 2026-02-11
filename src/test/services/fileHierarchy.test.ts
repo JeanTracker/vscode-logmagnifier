@@ -133,4 +133,44 @@ suite('FileHierarchyService Test Suite', () => {
         const f1Parent = newService.getParent(filter1Uri);
         assert.strictEqual(f1Parent?.toString(), originalUri.toString());
     });
+
+    test('Scenario 9: Recursive Delete (Original > Filter > Bookmark)', () => {
+        // Setup: Original > Filter1 > Bookmark
+        service.registerChild(originalUri, filter1Uri, 'filter');
+        service.registerChild(filter1Uri, bookmarkUri, 'bookmark');
+
+        // Verify hierarchy exists
+        assert.ok(service.getNode(originalUri));
+        assert.ok(service.getNode(filter1Uri));
+        assert.ok(service.getNode(bookmarkUri));
+
+        // Action: Unregister Original recursively
+        service.unregister(originalUri, true);
+
+        // Verify all nodes are gone
+        assert.strictEqual(service.getNode(originalUri), undefined, 'Original should be removed');
+        assert.strictEqual(service.getNode(filter1Uri), undefined, 'Filter should be removed');
+        assert.strictEqual(service.getNode(bookmarkUri), undefined, 'Bookmark should be removed');
+    });
+
+    test('Scenario 10: Child Delete (Original > Filter > Bookmark -> Delete Filter)', () => {
+        // Setup: Original > Filter1 > Bookmark
+        service.registerChild(originalUri, filter1Uri, 'filter');
+        service.registerChild(filter1Uri, bookmarkUri, 'bookmark'); // Bookmark is child of Filter1 in this context setup?
+        // Wait, registerChild only links Parent -> Child. Children set of parent is updated.
+        // registerChild(originalUri, filter1Uri) -> Original has child Filter1. Filter1 has parent Original.
+        // registerChild(filter1Uri, bookmarkUri) -> Filter1 has child Bookmark. Bookmark has parent Filter1.
+
+        // Action: Unregister Filter recursively
+        service.unregister(filter1Uri, true);
+
+        // Verify Filter and Bookmark (its child) are gone, but Original remains
+        assert.strictEqual(service.getNode(filter1Uri), undefined, 'Filter should be removed');
+        assert.strictEqual(service.getNode(bookmarkUri), undefined, 'Bookmark should be removed');
+        assert.ok(service.getNode(originalUri), 'Original should NOT be removed');
+
+        // Check Original children empty
+        const children = service.getChildren(originalUri);
+        assert.strictEqual(children.length, 0, 'Original should have no children');
+    });
 });
